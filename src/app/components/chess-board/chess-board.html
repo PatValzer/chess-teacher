@@ -1,0 +1,50 @@
+<div class="chess-container">
+  <!-- Game Controls -->
+  <div class="controls-panel">
+    <h2 class="text-2xl font-bold mb-4 text-white">Chess Teacher</h2>
+
+    <!-- Game Status -->
+    <div class="status-card">
+      <h3 class="text-lg font-semibold mb-2">Game Status</h3>
+      <div class="status-info">
+        <p>
+          <span class="label">Turn:</span> <span class="value capitalize">{{ turn() }}</span>
+        </p>
+        @if (isCheck()) {
+        <p class="check-warning">⚠️ Check!</p>
+        } @if (isCheckmate()) {
+        <p class="checkmate-warning">🏁 Checkmate!</p>
+        } @if (isStalemate()) {
+        <p class="stalemate-warning">🤝 Stalemate!</p>
+        }
+      </div>
+    </div>
+
+    <!-- Move History -->
+    <div class="move-history">
+      <h3 class="text-lg font-semibold mb-2">Move History</h3>
+      <div class="moves-list">
+        @for (move of moveHistory(); track $index) {
+        <span class="move-item">{{ $index + 1 }}. {{ move }}</span>
+        } @empty {
+        <p class="text-gray-400 text-sm">No moves yet</p>
+        }
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button (click)="resetGame()" class="btn btn-primary">🔄 New Game</button>
+      <button (click)="undoMove()" class="btn btn-secondary">↶ Undo</button>
+      <button (click)="flipBoard()" class="btn btn-secondary">🔃 Flip Board</button>
+    </div>
+  </div>
+
+  <!-- Analysis Panel -->
+  <app-analysis-panel [fen]="fen()"></app-analysis-panel>
+
+  <!-- Chess Board -->
+  <div class="board-wrapper">
+    <div #board class="chessboard"></div>
+  </div>
+</div>

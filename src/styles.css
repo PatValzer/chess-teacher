@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+/* Import Chessground CSS */
+@import 'chessground/assets/chessground.base.css';
+@import 'chessground/assets/chessground.brown.css';
+@import 'chessground/assets/chessground.cburnett.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
