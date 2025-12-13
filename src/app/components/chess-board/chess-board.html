@@ -1,6 +1,6 @@
 <div class="chess-container">
   <!-- Game Controls -->
-  <div class="controls-panel">
+  <div class="controls-panel controls-area">
     <h2 class="text-2xl font-bold mb-4 text-white">Chess Teacher</h2>
 
     <!-- Game Status -->
@@ -24,8 +24,14 @@
     <div class="move-history">
       <h3 class="text-lg font-semibold mb-2">Move History</h3>
       <div class="moves-list">
-        @for (move of moveHistory(); track $index) {
-        <span class="move-item">{{ $index + 1 }}. {{ move }}</span>
+        @for (pair of movePairs(); track $index) {
+        <div class="move-pair">
+          <span class="move-number">{{ $index + 1 }}.</span>
+          <span class="move-white">{{ pair.white }}</span>
+          @if (pair.black) {
+          <span class="move-black">{{ pair.black }}</span>
+          }
+        </div>
         } @empty {
         <p class="text-gray-400 text-sm">No moves yet</p>
         }
@@ -37,14 +43,45 @@
       <button (click)="resetGame()" class="btn btn-primary">🔄 New Game</button>
       <button (click)="undoMove()" class="btn btn-secondary">↶ Undo</button>
       <button (click)="flipBoard()" class="btn btn-secondary">🔃 Flip Board</button>
+      <button (click)="toggleOptions()" class="btn btn-secondary">⚙️ Settings</button>
     </div>
   </div>
 
   <!-- Analysis Panel -->
-  <app-analysis-panel [fen]="fen()"></app-analysis-panel>
+  <div class="side-panel">
+    <app-analysis-panel [fen]="fen()"></app-analysis-panel>
+    <app-opening-explorer
+      [fen]="fen()"
+      (moveSelected)="onOpeningMove($event)"
+      (openingName)="onOpeningNameChange($event)"
+    >
+    </app-opening-explorer>
+  </div>
 
   <!-- Chess Board -->
-  <div class="board-wrapper">
-    <div #board class="chessboard"></div>
+  <div class="board-wrapper board-area">
+    <div class="board-header">
+      @if(openingName()) {
+      <span class="opening-label">{{ openingName() }}</span>
+      }
+    </div>
+    <div
+      #board
+      class="chessboard"
+      [ngClass]="['theme-' + currentBoardTheme(), 'pieces-' + currentPieceTheme()]"
+    ></div>
   </div>
+
+  <app-options-dialog
+    [visible]="showOptions()"
+    [currentBoardTheme]="currentBoardTheme()"
+    [currentPieceTheme]="currentPieceTheme()"
+    [whitePlayerType]="whitePlayerType()"
+    [blackPlayerType]="blackPlayerType()"
+    [whiteComputerElo]="whiteComputerElo()"
+    [blackComputerElo]="blackComputerElo()"
+    (close)="showOptions.set(false)"
+    (settingsChange)="updateSettings($event)"
+  >
+  </app-options-dialog>
 </div>

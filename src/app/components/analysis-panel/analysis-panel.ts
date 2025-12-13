@@ -20,24 +20,35 @@ export class AnalysisPanel implements OnInit, OnDestroy {
     const a = this.analysis();
     if (!a) return '+0.0';
 
+    const turn = this.fen.split(' ')[1] || 'w';
+    const modifier = turn === 'b' ? -1 : 1;
+
     if (a.mate !== undefined) {
-      return `M${a.mate}`;
+      const mateValue = a.mate * modifier;
+      return `M${mateValue}`;
     }
 
-    const eval_pawns = (a.evaluation / 100).toFixed(1);
-    return a.evaluation >= 0 ? `+${eval_pawns}` : eval_pawns;
+    const eval_points = ((a.evaluation * modifier) / 100).toFixed(1);
+    const abs_eval = a.evaluation * modifier;
+    return abs_eval >= 0 ? `+${eval_points}` : eval_points;
   });
 
   evaluationBar = computed(() => {
     const a = this.analysis();
     if (!a) return 50;
 
+    const turn = this.fen.split(' ')[1] || 'w';
+    const modifier = turn === 'b' ? -1 : 1;
+
     if (a.mate !== undefined) {
-      return a.mate > 0 ? 100 : 0;
+      const mateValue = a.mate * modifier;
+      return mateValue > 0 ? 100 : 0;
     }
 
     // Convert centipawns to percentage (clamped between 0-100)
-    const normalized = 50 + a.evaluation / 10;
+    // 50% is 0.0 eval. +1000cp (10 pawns) = 100%, -1000cp = 0%
+    const score = a.evaluation * modifier;
+    const normalized = 50 + score / 10; // Adjusted scale for better visual resolution
     return Math.max(0, Math.min(100, normalized));
   });
 

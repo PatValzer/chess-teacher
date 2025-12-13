@@ -1,0 +1,36 @@
+<div class="explorer-container">
+  <div class="explorer-header">
+    <h4>Opening Explorer</h4>
+    <span *ngIf="openingData?.opening" class="opening-name"
+      >{{ openingData?.opening?.eco }} {{ openingData?.opening?.name }}</span
+    >
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+
+  <div *ngIf="!loading && openingData?.moves?.length === 0" class="no-moves">
+    No master games found in this position.
+  </div>
+
+  <div class="moves-list" *ngIf="!loading && openingData?.moves">
+    <div *ngFor="let move of openingData!.moves" class="move-row" (click)="onMoveClick(move)">
+      <div class="move-san">{{ move.san }}</div>
+      <div class="move-stats">
+        <div class="stat-bar">
+          <div
+            class="white-wins"
+            [style.flex-grow]="move.white"
+            title="White Wins: {{ move.white }}"
+          ></div>
+          <div class="draws" [style.flex-grow]="move.draws" title="Draws: {{ move.draws }}"></div>
+          <div
+            class="black-wins"
+            [style.flex-grow]="move.black"
+            title="Black Wins: {{ move.black }}"
+          ></div>
+        </div>
+        <div class="games-count">{{ getTotal(move) | number }} games</div>
+      </div>
+    </div>
+  </div>
+</div>

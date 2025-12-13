@@ -1,0 +1,136 @@
+@if (visible) {
+<div class="dialog-overlay" (click)="cancel()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <div class="dialog-header">
+      <h2 class="text-xl font-bold text-white">Board Settings</h2>
+      <button class="close-btn" (click)="cancel()">×</button>
+    </div>
+
+    <div class="dialog-body">
+      <div class="section">
+        <h3 class="section-title">Game Settings</h3>
+        <div class="player-config">
+          <div class="config-row">
+            <label>White Player:</label>
+            <div class="toggle-group">
+              <button
+                class="toggle-btn"
+                [class.active]="selectedWhitePlayerType === 'human'"
+                (click)="selectedWhitePlayerType = 'human'"
+              >
+                Human
+              </button>
+              <button
+                class="toggle-btn"
+                [class.active]="selectedWhitePlayerType === 'computer'"
+                (click)="selectedWhitePlayerType = 'computer'"
+              >
+                Computer
+              </button>
+            </div>
+          </div>
+          <div class="config-row">
+            <label>Black Player:</label>
+            <div class="toggle-group">
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBlackPlayerType === 'human'"
+                (click)="selectedBlackPlayerType = 'human'"
+              >
+                Human
+              </button>
+              <button
+                class="toggle-btn"
+                [class.active]="selectedBlackPlayerType === 'computer'"
+                (click)="selectedBlackPlayerType = 'computer'"
+              >
+                Computer
+              </button>
+            </div>
+          </div>
+
+          <!-- White Player ELO -->
+          @if (selectedWhitePlayerType === 'computer') {
+          <div class="config-row elo-config">
+            <div class="elo-header">
+              <label>White Computer ELO:</label>
+              <span class="elo-value">{{ selectedWhiteComputerElo }}</span>
+            </div>
+            <input
+              type="range"
+              min="1350"
+              max="2850"
+              step="50"
+              [(ngModel)]="selectedWhiteComputerElo"
+              class="elo-slider"
+            />
+            <div class="elo-labels">
+              <span>Beginner</span>
+              <span>Grandmaster</span>
+            </div>
+          </div>
+          }
+
+          <!-- Black Player ELO -->
+          @if (selectedBlackPlayerType === 'computer') {
+          <div class="config-row elo-config">
+            <div class="elo-header">
+              <label>Black Computer ELO:</label>
+              <span class="elo-value">{{ selectedBlackComputerElo }}</span>
+            </div>
+            <input
+              type="range"
+              min="1350"
+              max="2850"
+              step="50"
+              [(ngModel)]="selectedBlackComputerElo"
+              class="elo-slider"
+            />
+            <div class="elo-labels">
+              <span>Beginner</span>
+              <span>Grandmaster</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">Board Theme</h3>
+        <div class="options-grid">
+          @for (theme of boardThemes; track theme.id) {
+          <button
+            class="option-btn"
+            [class.active]="selectedBoardTheme === theme.id"
+            (click)="selectedBoardTheme = theme.id"
+          >
+            <div class="preview-board" [class]="'theme-' + theme.id"></div>
+            <span>{{ theme.name }}</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">Piece Set</h3>
+        <div class="options-grid">
+          @for (theme of pieceThemes; track theme.id) {
+          <button
+            class="option-btn"
+            [class.active]="selectedPieceTheme === theme.id"
+            (click)="selectedPieceTheme = theme.id"
+          >
+            <span>{{ theme.name }}</span>
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      <button class="btn btn-primary" (click)="save()">Save Changes</button>
+    </div>
+  </div>
+</div>
+}
