@@ -39,7 +39,7 @@ jobs:
           if [ -n "$OPENROUTER_API_KEY" ]; then
             sed -i "s|openRouterApiKey: 'YOUR_API_KEY_HERE'|openRouterApiKey: '$OPENROUTER_API_KEY'|g" src/environments/environment.prod.ts
           fi
-          npm run build -- --base-href=/chess-teacher/
+          npm run build -- --base-href=chess-teacher
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
