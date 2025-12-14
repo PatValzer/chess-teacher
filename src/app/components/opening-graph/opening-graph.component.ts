@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Chess } from 'chess.js';
 import {
   OpeningDataService,
@@ -24,7 +23,7 @@ interface GraphNode {
 @Component({
   selector: 'app-opening-graph',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, MiniBoardComponent],
+  imports: [CommonModule, MiniBoardComponent],
   templateUrl: './opening-graph.html',
   styleUrls: ['./opening-graph.css'],
 })

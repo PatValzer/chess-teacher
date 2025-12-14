@@ -18,7 +18,6 @@ import { AnalysisPanel } from '../analysis-panel/analysis-panel';
 import { Stockfish } from '../../services/stockfish';
 import { OptionsDialog } from '../options-dialog/options-dialog';
 import { OpeningExplorer } from '../opening-explorer/opening-explorer';
-import { NgClass, TitleCasePipe } from '@angular/common';
 import { AiAssistant } from '../ai-assistant/ai-assistant';
 import { ConnectionDialog } from '../connection-dialog/connection-dialog';
 import { WebRTCService, ConnectionRole, ConnectionStatus } from '../../services/webrtc.service';
@@ -41,9 +40,7 @@ import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.componen
     AnalysisPanel,
     OptionsDialog,
     OpeningExplorer,
-    NgClass,
     AiAssistant,
-    TitleCasePipe,
     ConnectionDialog,
     ActionButtons,
     MoveHistory,
