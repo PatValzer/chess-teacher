@@ -8,6 +8,7 @@ import {
   OnDestroy,
   computed,
   effect,
+  inject,
 } from '@angular/core';
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
@@ -22,6 +23,16 @@ import { AiAssistant } from '../ai-assistant/ai-assistant';
 import { ConnectionDialog } from '../connection-dialog/connection-dialog';
 import { WebRTCService, ConnectionRole, ConnectionStatus } from '../../services/webrtc.service';
 import { GameSyncService, MoveData } from '../../services/game-sync.service';
+import { SettingsService, AppSettings } from '../../services/settings.service';
+import { TranslationService } from '../../services/translation.service';
+
+import { ActionButtons } from '../action-buttons/action-buttons';
+import { MoveHistory } from '../move-history/move-history';
+import { MultiplayerStatus } from '../multiplayer-status/multiplayer-status';
+import { CapturedPieces } from '../captured-pieces/captured-pieces';
+import { TranslatePipe } from '../../pipes/translate.pipe';
+import { GameStatus } from '../game-status/game-status';
+import { OpeningGraphComponent } from '../opening-graph/opening-graph.component';
 
 @Component({
   selector: 'app-chess-board',
@@ -33,6 +44,13 @@ import { GameSyncService, MoveData } from '../../services/game-sync.service';
     AiAssistant,
     TitleCasePipe,
     ConnectionDialog,
+    ActionButtons,
+    MoveHistory,
+    MultiplayerStatus,
+    CapturedPieces,
+    TranslatePipe,
+    GameStatus,
+    OpeningGraphComponent,
   ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
@@ -69,11 +87,30 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   });
 
   // Options
+  // Options - Derived from SettingsService
+  private settingsService = inject(SettingsService);
+  private translationService = inject(TranslationService);
+
+  showOpeningGraph = signal(false);
+
+  settings = this.settingsService.settings;
   showOptions = signal(false);
-  currentBoardTheme = signal('blue');
-  currentPieceTheme = signal('default');
-  whitePlayerType = signal<'human' | 'computer'>('human');
-  blackPlayerType = signal<'human' | 'computer'>('human');
+
+  currentBoardTheme = computed(() => this.settings().boardTheme);
+  currentPieceTheme = computed(() => this.settings().pieceTheme);
+
+  // Player types are human in multiplayer, otherwise from settings
+  whitePlayerType = computed(() =>
+    this.isMultiplayerMode() ? 'human' : this.settings().whitePlayerType
+  );
+  blackPlayerType = computed(() =>
+    this.isMultiplayerMode() ? 'human' : this.settings().blackPlayerType
+  );
+
+  whiteComputerElo = computed(() => this.settings().whiteComputerElo);
+  blackComputerElo = computed(() => this.settings().blackComputerElo);
+
+  language = computed(() => this.settings().language);
 
   currentBoardThemeChanged = effect(() => {
     const newTheme = this.currentBoardTheme();
@@ -101,9 +138,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
     return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${selectedTheme}/${colorChar}${pieceChar}.svg`;
   }
-
-  whiteComputerElo = signal(1350);
-  blackComputerElo = signal(1350);
 
   // Captured pieces
   capturedByWhite = signal<string[]>([]);
@@ -148,6 +182,11 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
         this.isMyTurn.set(false); // Black waits
       }
     });
+
+    // Sync language from settings
+    effect(() => {
+      this.translationService.setLanguage(this.language());
+    });
   }
 
   ngAfterViewInit() {
@@ -158,21 +197,13 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.showOptions.update((v) => !v);
   }
 
-  updateSettings(settings: {
-    boardTheme: string;
-    pieceTheme: string;
-    whitePlayerType: 'human' | 'computer';
-    blackPlayerType: 'human' | 'computer';
-    whiteComputerElo: number;
-    blackComputerElo: number;
-  }) {
-    this.currentBoardTheme.set(settings.boardTheme);
-    this.currentPieceTheme.set(settings.pieceTheme);
-    this.whitePlayerType.set(settings.whitePlayerType);
-    this.blackPlayerType.set(settings.blackPlayerType);
-    this.whiteComputerElo.set(settings.whiteComputerElo);
-    this.blackComputerElo.set(settings.blackComputerElo);
-    console.log('Settings updated:', settings);
+  toggleOpeningGraph() {
+    this.showOpeningGraph.update((v) => !v);
+  }
+
+  updateSettings(newSettings: Partial<AppSettings>) {
+    this.settingsService.updateSettings(newSettings);
+    // console.log('Settings updated:', newSettings); // Optional logging
 
     this.applyNewConfig();
     this.checkAiMove();
@@ -492,7 +523,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     });
   }
 
-  // ... inside class ...
   orientation = signal<'white' | 'black'>('white');
 
   flipBoard() {
@@ -558,9 +588,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     // Reset game for new multiplayer session
     this.resetGame();
 
-    // Disable AI when in multiplayer mode
-    this.whitePlayerType.set('human');
-    this.blackPlayerType.set('human');
+    // Disable AI when in multiplayer mode is handled by computed signals using isMultiplayerMode()
   }
 
   disconnectMultiplayer(): void {

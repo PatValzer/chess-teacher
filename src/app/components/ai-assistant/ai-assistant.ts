@@ -8,15 +8,20 @@ import {
   effect,
   input,
   output,
+  ElementRef,
+  HostListener,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Stockfish, EngineAnalysis } from '../../services/stockfish';
 import { OpenRouterService, AiFeedback } from '../../services/open-router';
+import { SettingsService } from '../../services/settings.service';
 import { Subscription } from 'rxjs';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-ai-assistant',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './ai-assistant.html',
   styleUrl: './ai-assistant.css',
 })
@@ -31,6 +36,13 @@ export class AiAssistant implements OnInit, OnDestroy {
   isVisible = signal<boolean>(false);
   isAnalyzing = signal<boolean>(false);
 
+  showLevelSelection = signal<boolean>(false);
+
+  // Dragging state
+  position = { x: window.innerWidth - 400, y: 100 };
+  private isDragging = false;
+  private dragOffset = { x: 0, y: 0 };
+
   // Track previous evaluation to compare against
   // We store it as absolute perspective (positive = white advantage)
   private prevEval: number | null = null;
@@ -38,7 +50,11 @@ export class AiAssistant implements OnInit, OnDestroy {
 
   private analysisSubscription?: Subscription;
 
-  constructor(private stockfish: Stockfish, private openRouter: OpenRouterService) {
+  constructor(
+    private stockfish: Stockfish,
+    private openRouter: OpenRouterService,
+    private settingsService: SettingsService
+  ) {
     // Effect to reset state when FEN changes (new move)
     effect(() => {
       const fen = this.currentFen(); // dependency tracking
@@ -46,10 +62,60 @@ export class AiAssistant implements OnInit, OnDestroy {
     });
   }
 
+  onMouseDown(event: MouseEvent) {
+    // Prevent dragging if clicking buttons
+    if ((event.target as HTMLElement).tagName === 'BUTTON') return;
+
+    this.isDragging = true;
+    this.dragOffset = {
+      x: event.clientX - this.position.x,
+      y: event.clientY - this.position.y,
+    };
+    event.preventDefault(); // Prevent text selection
+  }
+
+  @HostListener('window:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (this.isDragging) {
+      this.position = {
+        x: event.clientX - this.dragOffset.x,
+        y: event.clientY - this.dragOffset.y,
+      };
+    }
+  }
+
+  @HostListener('window:mouseup')
+  onMouseUp() {
+    this.isDragging = false;
+  }
+
   ngOnInit() {
     this.analysisSubscription = this.stockfish.analysis$.subscribe((analysis) => {
       this.processAnalysis(analysis);
     });
+
+    // Check if user level is set
+    const settings = this.settingsService.settings();
+    if (!settings.userLevel) {
+      setTimeout(() => {
+        this.askForLevel();
+      }, 1000); // Small delay to appear after load
+    }
+  }
+
+  private askForLevel() {
+    this.isVisible.set(true);
+    this.message.set('AI.ASK_LEVEL');
+    this.showLevelSelection.set(true);
+  }
+
+  selectLevel(level: 'beginner' | 'intermediate' | 'advanced') {
+    this.settingsService.updateSettings({ userLevel: level });
+    this.showLevelSelection.set(false);
+    this.message.set('AI.READY');
+
+    // If we have a position, re-trigger analysis if needed or just wait for next move
+    // For now, just setting ready state.
   }
 
   ngOnDestroy() {
@@ -59,19 +125,23 @@ export class AiAssistant implements OnInit, OnDestroy {
   private onFenChange(fen: string) {
     if (!fen) return;
 
+    // If we are selecting level, don't interrupt
+    if (this.showLevelSelection()) return;
+
     // Determine turn from FEN
     const parts = fen.split(' ');
     this.currentTurn = parts[1] as 'w' | 'b';
 
     // When FEN changes, we are waiting for new analysis
     this.isAnalyzing.set(true);
-    this.message.set('Thinking...');
+    this.message.set('AI.THINKING');
     this.suggestion.set(undefined);
     this.isVisible.set(true);
   }
 
   private processAnalysis(analysis: EngineAnalysis | null) {
     if (!analysis) return;
+    if (this.showLevelSelection()) return;
 
     if (this.isAnalyzing()) {
       // Only process once per move (when we are in "thinking" state)
@@ -92,8 +162,19 @@ export class AiAssistant implements OnInit, OnDestroy {
         const scoreChange = moverIsWhite ? diff : -diff;
 
         // Call OpenRouter with Stockfish's best move
+        const settings = this.settingsService.settings();
+        const language = settings.language;
+        const userLevel = settings.userLevel || 'beginner';
+
         this.openRouter
-          .generateFeedback(this.currentFen(), scoreChange, moverIsWhite, analysis.bestMove)
+          .generateFeedback(
+            this.currentFen(),
+            scoreChange,
+            this.currentTurn === 'w',
+            analysis.bestMove,
+            language,
+            userLevel
+          )
           .subscribe((response) => {
             this.message.set(response.feedback);
             this.suggestion.set(response.suggestedMove);
@@ -101,7 +182,7 @@ export class AiAssistant implements OnInit, OnDestroy {
           });
       } else {
         // First move
-        this.message.set('Ready to analyze!');
+        this.message.set('AI.READY');
         this.suggestion.set(undefined);
         this.isAnalyzing.set(false);
       }

@@ -2,10 +2,11 @@ import { Component, Input, OnInit, OnDestroy, signal, computed } from '@angular/
 import { Stockfish, EngineAnalysis } from '../../services/stockfish';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-analysis-panel',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './analysis-panel.html',
   styleUrl: './analysis-panel.css',
 })

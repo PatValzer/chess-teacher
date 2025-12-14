@@ -1,0 +1,24 @@
+<div class="action-buttons">
+  <button (click)="resetGame.emit()" class="btn btn-primary">
+    <span class="btn-icon">🔄</span> {{ 'GAME.RESET' | translate }}
+  </button>
+  <button (click)="undoMove.emit()" class="btn btn-secondary">
+    <span class="btn-icon">↶</span> {{ 'GAME.UNDO' | translate }}
+  </button>
+  <button (click)="flipBoard.emit()" class="btn btn-secondary">
+    <span class="btn-icon">🔃</span> {{ 'GAME.FLIP' | translate }}
+  </button>
+  <button (click)="toggleOptions.emit()" class="btn btn-secondary">
+    <span class="btn-icon">⚙️</span> {{ 'GAME.SETTINGS' | translate }}
+  </button>
+
+  @if (!isMultiplayerMode) {
+  <button (click)="openConnectionDialog.emit()" class="btn btn-multiplayer">
+    <span class="btn-icon">🔗</span> {{ 'GAME.PLAY_ONLINE' | translate }}
+  </button>
+  } @else {
+  <button (click)="disconnectMultiplayer.emit()" class="btn btn-disconnect">
+    <span class="btn-icon">❌</span> {{ 'GAME.DISCONNECT' | translate }}
+  </button>
+  }
+</div>

@@ -9,11 +9,12 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OpeningService, OpeningResponse, OpeningMove } from '../../services/opening';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-opening-explorer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './opening-explorer.html',
   styleUrl: './opening-explorer.css',
 })

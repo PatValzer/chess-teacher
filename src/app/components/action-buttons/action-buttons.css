@@ -1,0 +1,50 @@
+.action-buttons {
+  @apply grid grid-cols-2 gap-3;
+}
+
+.btn {
+  @apply flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-cyan-900/20 active:shadow-none;
+}
+
+.btn-primary:hover {
+  @apply shadow-cyan-500/50 brightness-110;
+}
+
+.btn-secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%);
+  transform: scale(1.05);
+}
+
+.btn-multiplayer {
+  @apply bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-teal-900/20 active:shadow-none col-span-2;
+}
+
+.btn-multiplayer:hover {
+  @apply shadow-teal-500/50 brightness-110;
+}
+
+.btn-disconnect {
+  @apply bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-red-900/20 active:shadow-none col-span-2;
+}
+
+.btn-disconnect:hover {
+  @apply shadow-red-500/50 brightness-110;
+}

@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WebRTCService, ConnectionStatus, ConnectionRole } from '../../services/webrtc.service';
 import QRCode from 'qrcode';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 type ConnectionStep =
   | 'choose-role'
@@ -13,7 +14,7 @@ type ConnectionStep =
 @Component({
   selector: 'app-connection-dialog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './connection-dialog.html',
   styleUrl: './connection-dialog.css',
 })

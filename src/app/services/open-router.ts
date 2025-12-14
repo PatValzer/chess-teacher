@@ -22,13 +22,18 @@ export class OpenRouterService {
     fen: string,
     scoreChange: number,
     isWhiteTurn: boolean,
-    bestMove?: string
+    bestMove?: string,
+    language: 'en' | 'it' = 'en',
+    userLevel: string = 'beginner'
   ): Observable<AiFeedback> {
     const currentTurn = isWhiteTurn ? 'White' : 'Black';
     const previousMover = isWhiteTurn ? 'Black' : 'White';
+    const langName = language === 'it' ? 'Italian' : 'English';
 
     const prompt = `
-You are a witty chess coach. 
+You are a friendly and instructive chess teacher guiding a ${userLevel} student.
+Answer in ${langName}.
+
 The current position FEN is: ${fen}.
 It's ${currentTurn}'s turn to move.
 
@@ -40,12 +45,15 @@ ${previousMover} just moved, and the evaluation changed by ${scoreChange.toFixed
 The chess engine's best move for ${currentTurn} is: ${bestMove || 'analyzing...'}
 
 Provide:
-1. A brief, witty comment on ${previousMover}'s last move (max 12 words)
+1. A brief, educational comment on ${previousMover}'s last move (max 15 words). 
+   - Since the student is ${userLevel}, explain concepts appropriate for their level.
+   - If user made a mistake, explain WHY gently.
+   - Answer strictly in ${langName}.
 2. Return the engine's best move EXACTLY as given: ${bestMove}
 
 Return ONLY valid JSON (no markdown, no code blocks):
 {
-  "feedback": "your witty comment here",
+  "feedback": "your educational comment here",
   "suggestedMove": "the exact move from above"
 }
     `.trim();

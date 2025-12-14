@@ -1,0 +1,36 @@
+/* Multiplayer Status */
+.multiplayer-status {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(20, 184, 166, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.status-header {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.status-dot {
+  @apply w-3 h-3 rounded-full bg-slate-500 animate-pulse;
+}
+
+.status-dot.connected {
+  @apply bg-teal-500;
+}
+
+.status-text {
+  @apply text-white font-medium;
+}
+
+.role-info {
+  @apply text-slate-300 text-sm mb-2;
+}
+
+.role-info strong {
+  @apply text-white;
+}
+
+.waiting-turn {
+  @apply text-amber-400 text-sm font-medium animate-pulse;
+}

@@ -1,0 +1,12 @@
+<div class="status-card">
+  <h3 class="text-lg font-semibold mb-2">{{ 'GAME.STATUS' | translate }}</h3>
+  <div class="status-info">
+    @if (isCheck) {
+    <p class="check-warning">⚠️ {{ 'GAME.CHECK' | translate }}</p>
+    } @if (isCheckmate) {
+    <p class="checkmate-warning">🏁 {{ 'GAME.CHECKMATE' | translate }}!</p>
+    } @if (isStalemate) {
+    <p class="stalemate-warning">🤝 {{ 'GAME.STALEMATE' | translate }}!</p>
+    }
+  </div>
+</div>

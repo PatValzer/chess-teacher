@@ -46,7 +46,7 @@
               "outputHashing": "all",
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.local.ts",
+                  "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
@@ -55,6 +55,17 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "local": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -67,6 +78,9 @@
             },
             "development": {
               "buildTarget": "chess-teacher-app:build:development"
+            },
+            "local": {
+              "buildTarget": "chess-teacher-app:build:local"
             }
           },
           "defaultConfiguration": "development"

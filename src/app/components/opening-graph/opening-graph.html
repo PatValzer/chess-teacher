@@ -1,0 +1,274 @@
+<div
+  class="fixed inset-0 z-50 flex flex-col bg-slate-900/95 backdrop-blur-xl transition-all duration-300 overflow-hidden text-white font-sans"
+>
+  <!-- Header -->
+  <div
+    class="flex justify-between items-center p-6 border-b border-slate-700/50 bg-slate-800/30 shrink-0"
+  >
+    <div>
+      <h2
+        class="text-3xl font-bold bg-gradient-to-r from-teal-400 to-blue-500 bg-clip-text text-transparent"
+      >
+        Opening Explorer
+      </h2>
+      <p class="text-slate-400 text-sm mt-1">Navigate the tree of chess knowledge</p>
+    </div>
+    <button
+      (click)="onClose()"
+      class="p-2 rounded-full hover:bg-slate-700/50 transition-colors text-slate-300 hover:text-white"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-8 w-8"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Breadcrumbs for Navigation -->
+  @if (activePath.length > 0) {
+  <div
+    class="px-8 py-3 bg-slate-800/50 border-b border-slate-700/30 flex items-center gap-2 overflow-x-auto"
+  >
+    <button
+      (click)="resetToRoot()"
+      class="text-slate-400 hover:text-teal-400 text-sm font-semibold transition-colors"
+    >
+      Top Level
+    </button>
+    @for (item of activePath; track item.id) {
+    <span class="text-slate-600">/</span>
+    <button
+      (click)="navigateTo(item)"
+      class="text-slate-200 hover:text-teal-400 text-sm font-semibold transition-colors flex items-center gap-1"
+    >
+      {{ item.name }}
+    </button>
+    }
+  </div>
+  }
+
+  <!-- Main Grid Area -->
+  <div class="flex-1 overflow-y-auto p-8 relative">
+    <!-- If we are at root, show Categories -->
+    @if (activePath.length === 0) {
+    <div
+      class="flex flex-col md:flex-row gap-8 justify-center items-start min-w-max mx-auto animate-slide-in"
+    >
+      @for (category of categories; track category.name) {
+      <div class="flex flex-col gap-4 w-80">
+        <!-- Category Header -->
+        <div
+          class="p-4 rounded-xl border border-slate-600/50 bg-gradient-to-b from-slate-700/80 to-slate-800/80 shadow-lg backdrop-blur-sm text-center"
+        >
+          <h3 class="text-xl font-bold text-teal-300">{{ category.name }}</h3>
+          <p class="text-xs text-slate-400 mt-2">{{ category.description }}</p>
+        </div>
+
+        <!-- Openings in Category -->
+        @for (opening of category.openings; track opening.id) {
+        <div class="opening-card-wrapper" (click)="exploreOpening(opening)">
+          <div
+            class="opening-card p-4 rounded-lg bg-slate-800/60 border border-slate-700/50 cursor-pointer relative group overflow-hidden"
+          >
+            <!-- Glow Effect -->
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-teal-500/0 via-teal-500/10 to-teal-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"
+            ></div>
+
+            <div class="flex justify-between items-start mb-2">
+              <h4 class="font-bold text-slate-100 text-lg">{{ opening.name }}</h4>
+              @if (opening.children?.length) {
+              <span
+                class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full border border-indigo-500/30"
+              >
+                {{ opening.children?.length }} Vars
+              </span>
+              }
+            </div>
+            <div
+              class="text-xs text-teal-400 font-mono mb-2 bg-slate-900/40 p-1 rounded inline-block"
+            >
+              {{ opening.moves }}
+            </div>
+            <p class="text-xs text-slate-400 line-clamp-2">{{ opening.description }}</p>
+
+            <!-- Mini Board Preview on Hover (optional, keeping it simple for speed) -->
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    } @else {
+    <!-- Nested View -->
+    <div class="max-w-4xl mx-auto animate-slide-in">
+      <!-- Current Focused Opening Header -->
+      <div
+        class="bg-slate-800/60 border border-slate-700/50 rounded-2xl p-6 mb-8 flex gap-6 items-start"
+      >
+        <div
+          class="w-32 h-32 shrink-0 bg-slate-900 rounded-lg overflow-hidden border border-slate-700 shadow-inner"
+        >
+          <app-mini-board [fen]="currentFen"></app-mini-board>
+        </div>
+        <div>
+          <h2 class="text-3xl font-bold text-white mb-2">{{ currentData?.name }}</h2>
+          <code
+            class="text-teal-400 bg-slate-900 px-2 py-1 rounded text-sm mb-4 inline-block font-mono border border-slate-700"
+          >
+            {{ currentData?.moves }}
+          </code>
+          <p class="text-slate-300 leading-relaxed mb-4">{{ currentData?.description }}</p>
+
+          <!-- Quick Pros/Cons Badge -->
+          <div class="flex gap-4">
+            @if(currentData?.goodFor?.length) {
+            <div class="text-sm text-emerald-400 flex items-center gap-1">
+              <span class="font-bold">✓</span> {{ currentData?.goodFor?.[0] }}
+            </div>
+            } @if(currentData?.badFor?.length) {
+            <div class="text-sm text-rose-400 flex items-center gap-1">
+              <span class="font-bold">!</span> {{ currentData?.badFor?.[0] }}
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Variations / Children -->
+      @if (currentData?.children?.length) {
+      <h3 class="text-xl font-bold text-slate-200 mb-4 pl-2 border-l-4 border-teal-500">
+        Variations
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        @for (child of currentData?.children; track child.id) {
+        <div
+          class="opening-card p-4 rounded-xl bg-slate-800/40 border border-slate-700/50 cursor-pointer hover:bg-slate-800 hover:border-teal-500/30 transition-all"
+          (click)="exploreOpening(child)"
+        >
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="font-bold text-slate-100">{{ child.name }}</h4>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4 text-slate-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
+          <div class="text-xs text-slate-400 font-mono mb-2">{{ child.moves }}</div>
+          <p class="text-xs text-slate-500">{{ child.description }}</p>
+        </div>
+        }
+      </div>
+      } @else {
+      <div class="text-center p-12 text-slate-500 border border-dashed border-slate-700 rounded-xl">
+        <p>End of line. No further variations recorded.</p>
+        <button (click)="viewDetails()" class="mt-4 text-teal-400 hover:text-teal-300 underline">
+          View Full Analysis
+        </button>
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Full Detail Modal (Only if requested specifically) -->
+  @if (selectedOpening) {
+  <div
+    class="absolute inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    (click)="closeDetails()"
+  >
+    <!-- ... (Same detail modal as before) ... -->
+    <div
+      class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all p-0"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Modal Header -->
+      <div
+        class="relative h-32 bg-gradient-to-r from-teal-900/40 to-blue-900/40 p-6 flex items-end"
+      >
+        <button
+          (click)="closeDetails()"
+          class="absolute top-4 right-4 text-slate-400 hover:text-white"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <div>
+          <h3 class="text-3xl font-bold text-white">{{ selectedOpening.name }}</h3>
+          <code class="text-teal-400 text-sm bg-slate-950/50 px-2 py-1 rounded mt-2 inline-block">{{
+            selectedOpening.moves
+          }}</code>
+        </div>
+      </div>
+
+      <div class="p-8 space-y-8">
+        <div>
+          <h4 class="text-lg font-semibold text-slate-300 mb-2 border-b border-slate-700/50 pb-2">
+            Overview
+          </h4>
+          <p class="text-slate-400 leading-relaxed">{{ selectedOpening.description }}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Pros -->
+          <div class="bg-emerald-950/10 rounded-xl p-6 border border-emerald-900/30">
+            <h4 class="text-emerald-400 font-bold mb-4 flex items-center gap-2">Good For</h4>
+            <ul class="space-y-3">
+              @for (pro of selectedOpening.goodFor; track pro) {
+              <li class="flex items-start gap-3 text-slate-300 text-sm">
+                <span class="bg-emerald-500/20 text-emerald-400 rounded-full p-1 mt-0.5">✓</span>
+                {{ pro }}
+              </li>
+              }
+            </ul>
+          </div>
+
+          <!-- Cons -->
+          <div class="bg-rose-950/10 rounded-xl p-6 border border-rose-900/30">
+            <h4 class="text-rose-400 font-bold mb-4 flex items-center gap-2">Risks</h4>
+            <ul class="space-y-3">
+              @for (con of selectedOpening.badFor; track con) {
+              <li class="flex items-start gap-3 text-slate-300 text-sm">
+                <span class="bg-rose-500/20 text-rose-400 rounded-full p-1 mt-0.5">!</span>
+                {{ con }}
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

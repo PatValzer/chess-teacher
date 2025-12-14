@@ -1,0 +1,18 @@
+<div class="move-history">
+  <h3 class="text-lg font-medium mb-2">Move History</h3>
+  <div class="moves-list-vertical">
+    @for (pair of movePairs; track $index) {
+    <div class="move-row-pair">
+      <span class="move-number-col">{{ $index + 1 }}.</span>
+      <button class="move-btn-text" (click)="goToMove.emit($index * 2)">{{ pair.white }}</button>
+      @if (pair.black) {
+      <button class="move-btn-text" (click)="goToMove.emit($index * 2 + 1)">
+        {{ pair.black }}
+      </button>
+      }
+    </div>
+    } @empty {
+    <div class="empty-history">No moves yet</div>
+    }
+  </div>
+</div>

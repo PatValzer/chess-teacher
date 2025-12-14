@@ -1,0 +1,45 @@
+/* Glassmorphism Logic handles by Tailwind in HTML */
+.graph-container {
+  overflow-x: auto;
+  padding-bottom: 2rem;
+}
+
+/* Node Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out forwards;
+}
+
+.opening-card-wrapper {
+  perspective: 1000px;
+}
+
+.opening-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.opening-card:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+/* Custom connection lines visual (vertical) */
+.vertical-line {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 2px;
+  height: 1.5rem; /* gap-6 is 1.5rem */
+  background: linear-gradient(to bottom, rgba(51, 65, 85, 0.5), rgba(51, 65, 85, 0));
+  transform: translateX(-50%);
+  pointer-events: none;
+}

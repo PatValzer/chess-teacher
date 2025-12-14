@@ -1,15 +1,15 @@
 <div class="explorer-container">
   <div class="explorer-header">
-    <h4>Opening Explorer</h4>
+    <h4>{{ 'OPENING.TITLE' | translate }}</h4>
     <span *ngIf="openingData?.opening" class="opening-name"
       >{{ openingData?.opening?.eco }} {{ openingData?.opening?.name }}</span
     >
   </div>
 
-  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="loading" class="loading">{{ 'OPENING.LOADING' | translate }}</div>
 
   <div *ngIf="!loading && openingData?.moves?.length === 0" class="no-moves">
-    No master games found in this position.
+    {{ 'OPENING.NO_GAMES' | translate }}
   </div>
 
   <div class="moves-list" *ngIf="!loading && openingData?.moves">
@@ -20,16 +20,22 @@
           <div
             class="white-wins"
             [style.flex-grow]="move.white"
-            title="White Wins: {{ move.white }}"
+            [title]="('OPENING.WHITE_WINS' | translate) + ': ' + move.white"
           ></div>
-          <div class="draws" [style.flex-grow]="move.draws" title="Draws: {{ move.draws }}"></div>
+          <div
+            class="draws"
+            [style.flex-grow]="move.draws"
+            [title]="('OPENING.DRAWS' | translate) + ': ' + move.draws"
+          ></div>
           <div
             class="black-wins"
             [style.flex-grow]="move.black"
-            title="Black Wins: {{ move.black }}"
+            [title]="('OPENING.BLACK_WINS' | translate) + ': ' + move.black"
           ></div>
         </div>
-        <div class="games-count">{{ getTotal(move) | number }} games</div>
+        <div class="games-count">
+          {{ getTotal(move) | number }} {{ 'OPENING.GAMES' | translate }}
+        </div>
       </div>
     </div>
   </div>

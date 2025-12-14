@@ -2,49 +2,49 @@
 <div class="dialog-overlay" (click)="cancel()">
   <div class="dialog-content" (click)="$event.stopPropagation()">
     <div class="dialog-header">
-      <h2 class="text-xl font-bold text-white">Board Settings</h2>
+      <h2 class="text-xl font-bold text-white">{{ 'SETTINGS.TITLE' | translate }}</h2>
       <button class="close-btn" (click)="cancel()">×</button>
     </div>
 
     <div class="dialog-body">
       <div class="section">
-        <h3 class="section-title">Game Settings</h3>
+        <h3 class="section-title">{{ 'SETTINGS.GAME_SETTINGS' | translate }}</h3>
         <div class="player-config">
           <div class="config-row">
-            <label>White Player:</label>
+            <label>{{ 'SETTINGS.WHITE_PLAYER' | translate }}:</label>
             <div class="toggle-group">
               <button
                 class="toggle-btn"
                 [class.active]="selectedWhitePlayerType === 'human'"
                 (click)="selectedWhitePlayerType = 'human'"
               >
-                Human
+                {{ 'SETTINGS.HUMAN' | translate }}
               </button>
               <button
                 class="toggle-btn"
                 [class.active]="selectedWhitePlayerType === 'computer'"
                 (click)="selectedWhitePlayerType = 'computer'"
               >
-                Computer
+                {{ 'SETTINGS.COMPUTER' | translate }}
               </button>
             </div>
           </div>
           <div class="config-row">
-            <label>Black Player:</label>
+            <label>{{ 'SETTINGS.BLACK_PLAYER' | translate }}:</label>
             <div class="toggle-group">
               <button
                 class="toggle-btn"
                 [class.active]="selectedBlackPlayerType === 'human'"
                 (click)="selectedBlackPlayerType = 'human'"
               >
-                Human
+                {{ 'SETTINGS.HUMAN' | translate }}
               </button>
               <button
                 class="toggle-btn"
                 [class.active]="selectedBlackPlayerType === 'computer'"
                 (click)="selectedBlackPlayerType = 'computer'"
               >
-                Computer
+                {{ 'SETTINGS.COMPUTER' | translate }}
               </button>
             </div>
           </div>
@@ -53,7 +53,7 @@
           @if (selectedWhitePlayerType === 'computer') {
           <div class="config-row elo-config">
             <div class="elo-header">
-              <label>White Computer ELO:</label>
+              <label>{{ 'SETTINGS.WHITE_ELO' | translate }}:</label>
               <span class="elo-value">{{ selectedWhiteComputerElo }}</span>
             </div>
             <input
@@ -65,8 +65,8 @@
               class="elo-slider"
             />
             <div class="elo-labels">
-              <span>Beginner</span>
-              <span>Grandmaster</span>
+              <span>{{ 'SETTINGS.BEGINNER' | translate }}</span>
+              <span>{{ 'SETTINGS.GRANDMASTER' | translate }}</span>
             </div>
           </div>
           }
@@ -75,7 +75,7 @@
           @if (selectedBlackPlayerType === 'computer') {
           <div class="config-row elo-config">
             <div class="elo-header">
-              <label>Black Computer ELO:</label>
+              <label>{{ 'SETTINGS.BLACK_ELO' | translate }}:</label>
               <span class="elo-value">{{ selectedBlackComputerElo }}</span>
             </div>
             <input
@@ -87,8 +87,8 @@
               class="elo-slider"
             />
             <div class="elo-labels">
-              <span>Beginner</span>
-              <span>Grandmaster</span>
+              <span>{{ 'SETTINGS.BEGINNER' | translate }}</span>
+              <span>{{ 'SETTINGS.GRANDMASTER' | translate }}</span>
             </div>
           </div>
           }
@@ -96,7 +96,22 @@
       </div>
 
       <div class="section">
-        <h3 class="section-title">Board Theme</h3>
+        <h3 class="section-title">{{ 'SETTINGS.LANGUAGE' | translate }}</h3>
+        <div class="options-grid">
+          @for (lang of languages; track lang.code) {
+          <button
+            class="option-btn"
+            [class.active]="selectedLanguage === lang.code"
+            (click)="changeLanguage(lang.code)"
+          >
+            <span>{{ lang.name }}</span>
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="section">
+        <h3 class="section-title">{{ 'SETTINGS.BOARD_THEME' | translate }}</h3>
         <div class="options-grid">
           @for (theme of boardThemes; track theme.id) {
           <button
@@ -105,14 +120,14 @@
             (click)="selectedBoardTheme = theme.id"
           >
             <div class="preview-board" [class]="'theme-' + theme.id"></div>
-            <span>{{ theme.name }}</span>
+            <span>{{ theme.name | translate }}</span>
           </button>
           }
         </div>
       </div>
 
       <div class="section">
-        <h3 class="section-title">Piece Set</h3>
+        <h3 class="section-title">{{ 'SETTINGS.PIECE_SET' | translate }}</h3>
         <div class="options-grid">
           @for (theme of pieceThemes; track theme.id) {
           <button
@@ -128,8 +143,10 @@
     </div>
 
     <div class="dialog-footer">
-      <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
-      <button class="btn btn-primary" (click)="save()">Save Changes</button>
+      <button class="btn btn-secondary" (click)="cancel()">
+        {{ 'SETTINGS.CANCEL' | translate }}
+      </button>
+      <button class="btn btn-primary" (click)="save()">{{ 'SETTINGS.SAVE' | translate }}</button>
     </div>
   </div>
 </div>

@@ -88,7 +88,11 @@ For local development, you have two options:
      openRouterApiKey: 'sk-or-v1-your-actual-key-here',
    };
    ```
-3. This file is ignored by Git and won't be committed
+3. Run the application with the local configuration:
+   ```bash
+   ng serve -c local
+   ```
+4. This will swap `environment.ts` (placeholder) with `environment.local.ts` (real key) during the build.
 
 ### Option B: Modify environment.ts temporarily
 

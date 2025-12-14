@@ -1,0 +1,9 @@
+<div class="captured-pieces flex flex-wrap -space-x-3">
+  @for(p of pieces; track $index) {
+  <img
+    [src]="getPieceUrl(p)"
+    class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
+    alt="captured piece"
+  />
+  }
+</div>

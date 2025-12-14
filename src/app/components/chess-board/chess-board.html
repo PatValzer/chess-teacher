@@ -4,107 +4,57 @@
     <h2 class="text-2xl font-semibold mb-4 text-white">Chess Teacher</h2>
 
     <!-- Game Status -->
-    <!-- Game Status -->
     @if (isCheck() || isCheckmate() || isStalemate()) {
-    <div class="status-card">
-      <h3 class="text-lg font-semibold mb-2">Game Status</h3>
-      <div class="status-info">
-        @if (isCheck()) {
-        <p class="check-warning">⚠️ Check!</p>
-        } @if (isCheckmate()) {
-        <p class="checkmate-warning">🏁 Checkmate!</p>
-        } @if (isStalemate()) {
-        <p class="stalemate-warning">🤝 Stalemate!</p>
-        }
-      </div>
-    </div>
+    <app-game-status
+      [isCheck]="isCheck()"
+      [isCheckmate]="isCheckmate()"
+      [isStalemate]="isStalemate()"
+    ></app-game-status>
     }
 
-    <!-- Move History -->
-    <div class="move-history">
-      <h3 class="text-lg font-medium mb-2">Move History</h3>
-      <div class="moves-list-vertical">
-        @for (pair of movePairs(); track $index) {
-        <div class="move-row-pair">
-          <span class="move-number-col">{{ $index + 1 }}.</span>
-          <button class="move-btn-text" (click)="goToMove($index * 2)">{{ pair.white }}</button>
-          @if (pair.black) {
-          <button class="move-btn-text" (click)="goToMove($index * 2 + 1)">{{ pair.black }}</button>
-          }
-        </div>
-        } @empty {
-        <div class="empty-history">No moves yet</div>
-        }
-      </div>
-    </div>
-
-    <!-- Game Navigation -->
-    <div
-      class="navigation-controls flex justify-center gap-2 mb-4 p-2 bg-slate-700/30 rounded-lg border border-slate-600/30"
-    >
-      <button class="btn btn-secondary !px-4 !py-2" (click)="goToStart()" title="Start of Game">
-        <span class="btn-icon text-lg">⏮</span>
-      </button>
-      <button class="btn btn-secondary !px-4 !py-2" (click)="stepBack()" title="Previous Move">
-        <span class="btn-icon text-lg">◀</span>
-      </button>
-      <button class="btn btn-secondary !px-4 !py-2" (click)="stepForward()" title="Next Move">
-        <span class="btn-icon text-lg">▶</span>
-      </button>
-      <button class="btn btn-secondary !px-4 !py-2" (click)="goToEnd()" title="Current Position">
-        <span class="btn-icon text-lg">⏭</span>
-      </button>
-    </div>
-
     <!-- Action Buttons -->
-    <div class="action-buttons">
-      <button (click)="resetGame()" class="btn btn-primary">
-        <span class="btn-icon">🔄</span> New Game
-      </button>
-      <button (click)="undoMove()" class="btn btn-secondary">
-        <span class="btn-icon">↶</span> Undo
-      </button>
-      <button (click)="flipBoard()" class="btn btn-secondary">
-        <span class="btn-icon">🔃</span> Flip Board
-      </button>
-      <button (click)="toggleOptions()" class="btn btn-secondary">
-        <span class="btn-icon">⚙️</span> Settings
-      </button>
+    <app-action-buttons
+      [isMultiplayerMode]="isMultiplayerMode()"
+      (resetGame)="resetGame()"
+      (undoMove)="undoMove()"
+      (flipBoard)="flipBoard()"
+      (toggleOptions)="toggleOptions()"
+      (openConnectionDialog)="openConnectionDialog()"
+      (disconnectMultiplayer)="disconnectMultiplayer()"
+    />
 
-      @if (!isMultiplayerMode()) {
-      <button (click)="openConnectionDialog()" class="btn btn-multiplayer">
-        <span class="btn-icon">🔗</span> Play Online
-      </button>
-      } @else {
-      <button (click)="disconnectMultiplayer()" class="btn btn-disconnect">
-        <span class="btn-icon">❌</span> Disconnect
-      </button>
-      }
-    </div>
+    <!-- Move History -->
+    <app-move-history [movePairs]="movePairs()" (goToMove)="goToMove($event)"></app-move-history>
 
     <!-- Multiplayer Status -->
     @if (isMultiplayerMode()) {
-    <div class="multiplayer-status">
-      <div class="status-header">
-        <span class="status-dot" [class.connected]="connectionStatus() === 'connected'"></span>
-        <span class="status-text">
-          @if (connectionStatus() === 'connected') { Connected } @else if (connectionStatus() ===
-          'connecting') { Connecting... } @else { Disconnected }
-        </span>
-      </div>
-      <div class="role-info">
-        You are playing as: <strong>{{ multiplayerRole() === 'host' ? 'White' : 'Black' }}</strong>
-      </div>
-      @if (!isMyTurn() && connectionStatus() === 'connected') {
-      <div class="waiting-turn">⏳ Waiting for opponent...</div>
-      }
-    </div>
+    <app-multiplayer-status
+      [connectionStatus]="connectionStatus()"
+      [multiplayerRole]="multiplayerRole()"
+      [isMyTurn]="isMyTurn()"
+    ></app-multiplayer-status>
     }
   </div>
 
   <!-- Analysis Panel -->
   <div class="side-panel">
     <app-analysis-panel [fen]="fen()"></app-analysis-panel>
+
+    <button
+      (click)="toggleOpeningGraph()"
+      class="w-full mb-4 py-3 px-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white rounded-lg font-semibold shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border border-teal-400/30"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-5 w-5"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+      </svg>
+      Opening Map
+    </button>
     <app-opening-explorer
       [fen]="fen()"
       (moveSelected)="onOpeningMove($event)"
@@ -124,25 +74,17 @@
       "
     >
       @if (orientation() === 'white') {
-      <div class="captured-pieces flex flex-wrap -space-x-3">
-        @for(p of capturedByBlack(); track $index) {
-        <img
-          [src]="getPieceUrl(p, 'white')"
-          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
-          alt="captured piece"
-        />
-        }
-      </div>
+      <app-captured-pieces
+        [pieces]="capturedByBlack()"
+        color="white"
+        [pieceTheme]="currentPieceTheme()"
+      ></app-captured-pieces>
       } @else {
-      <div class="captured-pieces flex flex-wrap -space-x-3">
-        @for(p of capturedByWhite(); track $index) {
-        <img
-          [src]="getPieceUrl(p, 'black')"
-          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
-          alt="captured piece"
-        />
-        }
-      </div>
+      <app-captured-pieces
+        [pieces]="capturedByWhite()"
+        color="black"
+        [pieceTheme]="currentPieceTheme()"
+      ></app-captured-pieces>
       }
     </div>
 
@@ -156,7 +98,7 @@
       #board
       class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
     ></div>
-    {{ currentBoardTheme() }}
+    <!-- {{ currentBoardTheme() }} -->
     <!-- Bottom Player Info -->
     <div
       class="player-info bottom w-full flex justify-start items-center px-4 py-3 bg-slate-800/40 rounded-lg mt-2 border border-slate-700/30 min-h-[4rem] transition-all duration-300"
@@ -166,26 +108,52 @@
       "
     >
       @if (orientation() === 'white') {
-      <div class="captured-pieces flex flex-wrap -space-x-3">
-        @for(p of capturedByWhite(); track $index) {
-        <img
-          [src]="getPieceUrl(p, 'black')"
-          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
-          alt="captured piece"
-        />
-        }
-      </div>
+      <app-captured-pieces
+        [pieces]="capturedByWhite()"
+        color="black"
+        [pieceTheme]="currentPieceTheme()"
+      ></app-captured-pieces>
       } @else {
-      <div class="captured-pieces flex flex-wrap -space-x-3">
-        @for(p of capturedByBlack(); track $index) {
-        <img
-          [src]="getPieceUrl(p, 'white')"
-          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
-          alt="captured piece"
-        />
-        }
-      </div>
+      <app-captured-pieces
+        [pieces]="capturedByBlack()"
+        color="white"
+        [pieceTheme]="currentPieceTheme()"
+      ></app-captured-pieces>
       }
+    </div>
+
+    <!-- Game Navigation -->
+    <div
+      class="navigation-controls flex justify-center gap-2 my-2 p-2 bg-slate-700/30 rounded-lg border border-slate-600/30 w-full max-w-[600px] mx-auto"
+    >
+      <button
+        class="btn btn-secondary !px-4 !py-2"
+        (click)="goToStart()"
+        [title]="'GAME.NAV_START' | translate"
+      >
+        <span class="btn-icon text-lg">⏮</span>
+      </button>
+      <button
+        class="btn btn-secondary !px-4 !py-2"
+        (click)="stepBack()"
+        [title]="'GAME.NAV_PREV' | translate"
+      >
+        <span class="btn-icon text-lg">◀</span>
+      </button>
+      <button
+        class="btn btn-secondary !px-4 !py-2"
+        (click)="stepForward()"
+        [title]="'GAME.NAV_NEXT' | translate"
+      >
+        <span class="btn-icon text-lg">▶</span>
+      </button>
+      <button
+        class="btn btn-secondary !px-4 !py-2"
+        (click)="goToEnd()"
+        [title]="'GAME.NAV_END' | translate"
+      >
+        <span class="btn-icon text-lg">⏭</span>
+      </button>
     </div>
 
     <app-ai-assistant
@@ -202,6 +170,7 @@
     [blackPlayerType]="blackPlayerType()"
     [whiteComputerElo]="whiteComputerElo()"
     [blackComputerElo]="blackComputerElo()"
+    [currentLanguage]="language()"
     (close)="showOptions.set(false)"
     (settingsChange)="updateSettings($event)"
   >
@@ -214,5 +183,7 @@
     (connected)="onConnectionEstablished($event)"
   >
   </app-connection-dialog>
+  } @if (showOpeningGraph()) {
+  <app-opening-graph (close)="toggleOpeningGraph()"></app-opening-graph>
   }
 </div>

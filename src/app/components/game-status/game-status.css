@@ -1,0 +1,30 @@
+.status-card {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.status-card h3 {
+  color: #e0f2fe;
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.check-warning {
+  @apply text-yellow-300 font-bold flex items-center gap-2;
+}
+
+.checkmate-warning {
+  @apply text-red-400 font-bold flex items-center gap-2 text-lg;
+}
+
+.stalemate-warning {
+  @apply text-amber-300 font-bold flex items-center gap-2;
+}

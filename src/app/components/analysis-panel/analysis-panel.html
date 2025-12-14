@@ -13,31 +13,35 @@
 
     <!-- Right Column: Title & Analysis Info -->
     <div class="right-column">
-      <h3 class="panel-title">Engine Analysis</h3>
+      <h3 class="panel-title">{{ 'ANALYSIS.TITLE' | translate }}</h3>
 
       <!-- Analysis Info -->
       @if (analysis(); as a) {
       <div class="analysis-info">
         <div class="info-row">
-          <span class="label">Depth:</span>
+          <span class="label">{{ 'ANALYSIS.DEPTH' | translate }}</span>
           <span class="value">{{ a.depth }}</span>
         </div>
         <div class="info-row">
-          <span class="label">Best Move:</span>
-          <span class="value best-move">{{ a.bestMove || 'Calculating...' }}</span>
+          <span class="label">{{ 'ANALYSIS.BEST_MOVE' | translate }}</span>
+          <span class="value best-move">{{
+            a.bestMove || ('ANALYSIS.CALCULATING' | translate)
+          }}</span>
         </div>
         @if (a.pv.length > 0) {
         <div class="info-row">
-          <span class="label">Line:</span>
+          <span class="label">{{ 'ANALYSIS.LINE' | translate }}</span>
           <span class="value pv-line">{{ a.pv.slice(0, 5).join(' ') }}</span>
         </div>
         }
       </div>
 
-      <button (click)="showBestMove()" class="hint-button">💡 Show Hint</button>
+      <button (click)="showBestMove()" class="hint-button">
+        {{ 'ANALYSIS.SHOW_HINT' | translate }}
+      </button>
       } @else {
       <div class="no-analysis">
-        <p>Make a move to see analysis</p>
+        <p>{{ 'ANALYSIS.MAKE_MOVE' | translate }}</p>
       </div>
       }
     </div>

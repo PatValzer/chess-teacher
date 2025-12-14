@@ -1,0 +1,17 @@
+<div class="multiplayer-status">
+  <div class="status-header">
+    <span class="status-dot" [class.connected]="connectionStatus === 'connected'"></span>
+    <span class="status-text">
+      @if (connectionStatus === 'connected') { {{ 'GAME.CONNECTED' | translate }} } @else if
+      (connectionStatus === 'connecting') { {{ 'GAME.CONNECTING' | translate }} } @else {
+      {{ 'GAME.DISCONNECTED' | translate }} }
+    </span>
+  </div>
+  <div class="role-info">
+    {{ 'GAME.PLAYING_AS' | translate }}:
+    <strong>{{ (multiplayerRole === 'host' ? 'GAME.WHITE' : 'GAME.BLACK') | translate }}</strong>
+  </div>
+  @if (!isMyTurn && connectionStatus === 'connected') {
+  <div class="waiting-turn">⏳ {{ 'GAME.WAITING_OPPONENT' | translate }}</div>
+  }
+</div>
