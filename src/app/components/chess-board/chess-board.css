@@ -3,7 +3,7 @@
 ::ng-deep .cg-wrap cg-board {
   --light: red |important;
   --dark: green;
-  background-image: url('/assets/board.svg');
+  background-image: url('assets/board.svg');
 }
 
 .chess-container {
