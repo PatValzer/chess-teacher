@@ -37,7 +37,7 @@ jobs:
         run: |
           # Inject API key into production environment file
           if [ -n "$OPENROUTER_API_KEY" ]; then
-            sed -i "s|openRouterApiKey: ''|openRouterApiKey: '$OPENROUTER_API_KEY'|g" src/environments/environment.prod.ts
+            sed -i "s|openRouterApiKey: 'YOUR_API_KEY_HERE'|openRouterApiKey: '$OPENROUTER_API_KEY'|g" src/environments/environment.prod.ts
           fi
           npm run build -- --base-href=/chess-teacher/
 
