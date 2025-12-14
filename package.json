@@ -35,12 +35,14 @@
     "qrcode": "^1.5.4",
     "rxjs": "~7.8.0",
     "stockfish.js": "^10.0.2",
+    "three": "^0.182.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.3",
     "@angular/cli": "^21.0.3",
     "@angular/compiler-cli": "^21.0.0",
+    "@types/three": "^0.182.0",
     "autoprefixer": "^10.4.22",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.6",

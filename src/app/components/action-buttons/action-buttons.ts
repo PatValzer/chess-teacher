@@ -17,4 +17,5 @@ export class ActionButtons {
   @Output() toggleOptions = new EventEmitter<void>();
   @Output() openConnectionDialog = new EventEmitter<void>();
   @Output() disconnectMultiplayer = new EventEmitter<void>();
+  @Output() toggle3d = new EventEmitter<void>();
 }

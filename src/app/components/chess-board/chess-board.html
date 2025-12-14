@@ -21,6 +21,7 @@
       (toggleOptions)="toggleOptions()"
       (openConnectionDialog)="openConnectionDialog()"
       (disconnectMultiplayer)="disconnectMultiplayer()"
+      (toggle3d)="toggle3dMode()"
     />
 
     <!-- Move History -->
@@ -94,10 +95,20 @@
       }
     </div>
 
+    @if (is3dMode()) {
+    <app-chess-board-3d
+      [fen]="fen()"
+      [orientation]="orientation()"
+      [boardTheme]="currentBoardTheme()"
+      (move)="on3dMove($event)"
+      class="chessboard-3d"
+    ></app-chess-board-3d>
+    } @else {
     <div
       #board
       class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
     ></div>
+    }
     <!-- {{ currentBoardTheme() }} -->
     <!-- Bottom Player Info -->
     <div

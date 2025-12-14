@@ -49,6 +49,12 @@
   height: 600px;
 }
 
+.chessboard-3d {
+  width: 600px;
+  height: 600px;
+  aspect-ratio: 1;
+}
+
 .controls-panel {
   background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
   backdrop-filter: blur(16px);
@@ -101,45 +107,45 @@
 }
 
 /* Board Themes */
-.chessboard.theme-default {
+::ng-deep .theme-default cg-board {
   /* Brown - Standard */
   --board-light: #f0d9b5;
   --board-dark: #b58863;
 }
 
-.chessboard.theme-green {
+::ng-deep .theme-green cg-board {
   /* Green */
   --board-light: #eeeed2;
   --board-dark: #769656;
 }
 
-.chessboard.theme-blue {
+::ng-deep .theme-blue cg-board {
   /* Blue */
   --board-light: #eae9d2;
   --board-dark: #4b7399;
 }
 
-.chessboard.theme-purple {
+::ng-deep .theme-purple cg-board {
   /* Purple */
   --board-light: #e0c0f0;
   --board-dark: #712b8f;
 }
 
-.chessboard.theme-wood {
+::ng-deep .theme-wood cg-board {
   --board-light: #e8c49e; /* Fallback */
   --board-dark: #8b5a2b; /* Fallback */
 }
 
-.chessboard.theme-wood ::ng-deep .cg-wrap cg-board {
+::ng-deep .theme-wood cg-board {
   background-image: url('../../../assets/wood.svg') !important;
 }
 
-.chessboard.theme-marble {
+::ng-deep .theme-marble cg-board {
   --board-light: #e8e8e8;
   --board-dark: #2c2c2c;
 }
 
-.chessboard.theme-marble ::ng-deep .cg-wrap cg-board {
+::ng-deep .theme-marble cg-board {
   background-image: url('../../../assets/marble.svg') !important;
 }
 
@@ -317,7 +323,8 @@
     padding: 1.5rem;
   }
 
-  .chessboard {
+  .chessboard,
+  .chessboard-3d {
     width: 100%;
     max-width: 600px;
     aspect-ratio: 1;

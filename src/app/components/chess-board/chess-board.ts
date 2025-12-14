@@ -33,6 +33,7 @@ import { CapturedPieces } from '../captured-pieces/captured-pieces';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { GameStatus } from '../game-status/game-status';
 import { OpeningGraphComponent } from '../opening-graph/opening-graph.component';
+import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.component';
 
 @Component({
   selector: 'app-chess-board',
@@ -51,6 +52,7 @@ import { OpeningGraphComponent } from '../opening-graph/opening-graph.component'
     TranslatePipe,
     GameStatus,
     OpeningGraphComponent,
+    ChessBoard3dComponent,
   ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
@@ -150,6 +152,26 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   connectionStatus = signal<ConnectionStatus>('disconnected');
   isMyTurn = signal(true); // In multiplayer, tracks if it's this player's turn
 
+  is3dMode = signal(false);
+
+  toggle3dMode() {
+    this.is3dMode.update((v) => !v);
+
+    // If switching back to 2D, we might need to ensure board is redrawn or state is correct
+    if (!this.is3dMode()) {
+      setTimeout(() => {
+        if (this.boardElement) {
+          this.initializeBoard();
+        }
+      }, 50);
+    }
+  }
+
+  on3dMove(move: { from: string; to: string }) {
+    // Convert string to Key
+    this.onMove(move.from as Key, move.to as Key);
+  }
+
   constructor(
     private stockfish: Stockfish,
     private webrtc: WebRTCService,
@@ -217,7 +239,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     // or specific config for pieces if using custom images.
     // We will handle the board class in the template/host binding or a specific method,
     // and pieces via updating the piece set configuration if we were using custom URLs.
-    // However, chessground manages pieces via CSS classes or URLs.
+    // Actually, chessground manages pieces via CSS classes or URLs.
 
     // Let's implement the piece theme logic by updating the global config if possible,
     // or by changing the container class that we will use in CSS to target pieces.

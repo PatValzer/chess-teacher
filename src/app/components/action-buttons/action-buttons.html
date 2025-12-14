@@ -11,6 +11,9 @@
   <button (click)="toggleOptions.emit()" class="btn btn-secondary">
     <span class="btn-icon">⚙️</span> {{ 'GAME.SETTINGS' | translate }}
   </button>
+  <button (click)="toggle3d.emit()" class="btn btn-secondary">
+    <span class="btn-icon">🧊</span> 3D
+  </button>
 
   @if (!isMultiplayerMode) {
   <button (click)="openConnectionDialog.emit()" class="btn btn-multiplayer">
