@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment.local';
 
 export interface AiFeedback {
   feedback: string;
@@ -13,8 +14,7 @@ export interface AiFeedback {
 })
 export class OpenRouterService {
   private apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
-  // TODO: Replace with user's actual API key or move to environment file
-  private apiKey = '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';
+  private apiKey = environment.openRouterApiKey;
 
   constructor(private http: HttpClient) {}
 

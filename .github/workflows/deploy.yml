@@ -32,7 +32,14 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build -- --base-href=/chess-teacher/
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          # Inject API key into production environment file
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            sed -i "s|openRouterApiKey: ''|openRouterApiKey: '$OPENROUTER_API_KEY'|g" src/environments/environment.prod.ts
+          fi
+          npm run build -- --base-href=/chess-teacher/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
