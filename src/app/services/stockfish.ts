@@ -25,7 +25,9 @@ export class Stockfish {
     try {
       console.log('Initializing Stockfish worker...');
       // Initialize Stockfish Web Worker
-      this.engine = new Worker('/assets/stockfish.js');
+      this.engine = new Worker(
+        new URL('assets/stockfish.js', document.baseURI || window.location.href)
+      );
 
       this.engine.onerror = (error) => {
         console.error('Stockfish Worker Error:', error);
