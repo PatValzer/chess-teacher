@@ -53,6 +53,9 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   moveHistory = signal<string[]>([]);
   openingName = signal('');
 
+  // Navigation state
+  private redoStack: any[] = [];
+
   movePairs = computed(() => {
     const history = this.moveHistory();
     const pairs: { white: string; black?: string }[] = [];
@@ -266,6 +269,10 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
           this.gameSync.sendMove(orig, dest, move.promotion, this.chess.fen());
           this.isMyTurn.set(false); // Now it's opponent's turn
         }
+
+        // Clear redo stack on new move
+        this.redoStack = [];
+        this.updateGameState();
       }
     } catch (e) {
       // Invalid move, reset the board
@@ -276,6 +283,9 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   private async checkAiMove() {
+    // If we are reviewing history (redoStack not empty), don't make AI moves
+    if (this.redoStack.length > 0) return;
+
     const isWhiteTurn = this.chess.turn() === 'w';
     const isComputerTurn =
       (isWhiteTurn && this.whitePlayerType() === 'computer') ||
@@ -348,7 +358,10 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.isCheck.set(this.chess.isCheck());
     this.isCheckmate.set(this.chess.isCheckmate());
     this.isStalemate.set(this.chess.isStalemate());
-    this.moveHistory.set(this.chess.history());
+
+    // Combine history: current history + reversed redo stack
+    const futureMoves = [...this.redoStack].reverse().map((m) => m.san);
+    this.moveHistory.set([...this.chess.history(), ...futureMoves]);
 
     // Calculate captured pieces
     const history = this.chess.history({ verbose: true });
@@ -383,6 +396,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
   resetGame() {
     this.chess.reset();
+    this.redoStack = [];
     this.chessgroundApi.set({
       fen: this.chess.fen(),
       turnColor: 'white',
@@ -395,36 +409,72 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   undoMove() {
+    this.stepBack();
+  }
+
+  stepBack() {
     const move = this.chess.undo();
     if (move) {
-      this.chessgroundApi.set({
-        fen: this.chess.fen(),
-        turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
-        movable: {
-          color: this.chess.turn() === 'w' ? 'white' : 'black',
-          dests: this.getValidMoves(),
-        },
-      });
+      this.redoStack.push(move);
+      this.updateBoardState();
       this.updateGameState();
     }
   }
 
+  stepForward() {
+    const move = this.redoStack.pop();
+    if (move) {
+      this.chess.move(move);
+      this.updateBoardState();
+      this.updateGameState();
+    }
+  }
+
+  goToStart() {
+    while (this.chess.history().length > 0) {
+      const move = this.chess.undo();
+      if (move) this.redoStack.push(move);
+    }
+    this.updateBoardState();
+    this.updateGameState();
+  }
+
+  goToEnd() {
+    while (this.redoStack.length > 0) {
+      const move = this.redoStack.pop();
+      if (move) this.chess.move(move);
+    }
+    this.updateBoardState();
+    this.updateGameState();
+  }
+
   goToMove(index: number) {
-    // index is the 0-based index in the move history array
-    // We want the state AFTER this move.
-    // So target history length is index + 1.
+    // Target move number (1-based because index maps to the move at that index, so we want the state after move index+1)
+    // Actually, index 0 is 1. View. target length = 1.
     const targetLength = index + 1;
     const currentLength = this.chess.history().length;
 
-    if (targetLength >= currentLength) return;
+    if (targetLength === currentLength) return;
 
-    // Undo until we reach the target state
-    // Note: this is destructive (standard undo behavior for this app)
-    const undosNeeded = currentLength - targetLength;
-    for (let i = 0; i < undosNeeded; i++) {
-      this.chess.undo();
+    if (targetLength < currentLength) {
+      // Go back
+      while (this.chess.history().length > targetLength) {
+        const move = this.chess.undo();
+        if (move) this.redoStack.push(move);
+      }
+    } else {
+      // Go forward
+      while (this.chess.history().length < targetLength && this.redoStack.length > 0) {
+        const move = this.redoStack.pop();
+        if (move) this.chess.move(move);
+      }
     }
 
+    this.updateBoardState();
+    this.updateGameState();
+  }
+
+  private updateBoardState() {
     this.chessgroundApi.set({
       fen: this.chess.fen(),
       turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
@@ -432,8 +482,14 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
         color: this.chess.turn() === 'w' ? 'white' : 'black',
         dests: this.getValidMoves(),
       },
+      lastMove:
+        this.chess.history({ verbose: true }).length > 0
+          ? [
+              this.chess.history({ verbose: true }).pop()!.from,
+              this.chess.history({ verbose: true }).pop()!.to,
+            ]
+          : undefined,
     });
-    this.updateGameState();
   }
 
   // ... inside class ...

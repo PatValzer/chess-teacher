@@ -1,5 +1,8 @@
 .analysis-panel {
-  @apply bg-slate-900/50 rounded-xl p-4 border border-slate-700/30;
+  background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(6, 182, 212, 0.3);
 }
 
 .panel-content {
@@ -11,18 +14,24 @@
 }
 
 .eval-bar-wrapper {
-  @apply relative w-8 h-48 bg-slate-800 rounded-lg overflow-hidden border border-slate-600;
+  position: relative;
+  width: 2rem;
+  height: 12rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(6, 182, 212, 0.3);
   display: flex;
   flex-direction: column;
 }
 
 .eval-bar-black {
-  @apply bg-slate-700;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
   transition: height 0.3s ease;
 }
 
 .eval-bar-white {
-  @apply bg-gradient-to-b from-purple-400 to-pink-400;
+  @apply bg-gradient-to-b from-cyan-400 to-blue-400;
   transition: height 0.3s ease;
 }
 
@@ -39,7 +48,7 @@
 }
 
 .panel-title {
-  @apply text-lg font-semibold mb-4 text-purple-300;
+  @apply text-lg font-semibold mb-4 text-cyan-300;
 }
 
 .analysis-info {
@@ -59,7 +68,7 @@
 }
 
 .best-move {
-  @apply text-purple-400 font-bold;
+  @apply text-cyan-400 font-bold;
 }
 
 .pv-line {
@@ -67,7 +76,7 @@
 }
 
 .hint-button {
-  @apply w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/50 mt-auto;
+  @apply w-full px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-cyan-500/50 mt-auto;
 }
 
 .no-analysis {

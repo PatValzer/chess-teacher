@@ -29,6 +29,7 @@ export class OptionsDialog {
   boardThemes = [
     { id: 'default', name: 'Standard (Brown)' },
     { id: 'wood', name: 'Classic Wood' },
+    { id: 'marble', name: 'Elegant Marble' },
     { id: 'green', name: 'Forest (Green)' },
     { id: 'blue', name: 'Ocean (Blue)' },
     { id: 'purple', name: 'Royal (Purple)' },

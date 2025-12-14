@@ -4,16 +4,11 @@
     <h2 class="text-2xl font-semibold mb-4 text-white">Chess Teacher</h2>
 
     <!-- Game Status -->
+    <!-- Game Status -->
+    @if (isCheck() || isCheckmate() || isStalemate()) {
     <div class="status-card">
       <h3 class="text-lg font-semibold mb-2">Game Status</h3>
       <div class="status-info">
-        <div
-          class="turn-indicator"
-          [ngClass]="{ 'white-turn': turn() === 'white', 'black-turn': turn() === 'black' }"
-        >
-          <div class="turn-icon"></div>
-          <span class="turn-text">{{ turn() | titlecase }} to move</span>
-        </div>
         @if (isCheck()) {
         <p class="check-warning">⚠️ Check!</p>
         } @if (isCheckmate()) {
@@ -23,6 +18,7 @@
         }
       </div>
     </div>
+    }
 
     <!-- Move History -->
     <div class="move-history">
@@ -42,17 +38,47 @@
       </div>
     </div>
 
+    <!-- Game Navigation -->
+    <div
+      class="navigation-controls flex justify-center gap-2 mb-4 p-2 bg-slate-700/30 rounded-lg border border-slate-600/30"
+    >
+      <button class="btn btn-secondary !px-4 !py-2" (click)="goToStart()" title="Start of Game">
+        <span class="btn-icon text-lg">⏮</span>
+      </button>
+      <button class="btn btn-secondary !px-4 !py-2" (click)="stepBack()" title="Previous Move">
+        <span class="btn-icon text-lg">◀</span>
+      </button>
+      <button class="btn btn-secondary !px-4 !py-2" (click)="stepForward()" title="Next Move">
+        <span class="btn-icon text-lg">▶</span>
+      </button>
+      <button class="btn btn-secondary !px-4 !py-2" (click)="goToEnd()" title="Current Position">
+        <span class="btn-icon text-lg">⏭</span>
+      </button>
+    </div>
+
     <!-- Action Buttons -->
     <div class="action-buttons">
-      <button (click)="resetGame()" class="btn btn-primary">🔄 New Game</button>
-      <button (click)="undoMove()" class="btn btn-secondary">↶ Undo</button>
-      <button (click)="flipBoard()" class="btn btn-secondary">🔃 Flip Board</button>
-      <button (click)="toggleOptions()" class="btn btn-secondary">⚙️ Settings</button>
+      <button (click)="resetGame()" class="btn btn-primary">
+        <span class="btn-icon">🔄</span> New Game
+      </button>
+      <button (click)="undoMove()" class="btn btn-secondary">
+        <span class="btn-icon">↶</span> Undo
+      </button>
+      <button (click)="flipBoard()" class="btn btn-secondary">
+        <span class="btn-icon">🔃</span> Flip Board
+      </button>
+      <button (click)="toggleOptions()" class="btn btn-secondary">
+        <span class="btn-icon">⚙️</span> Settings
+      </button>
 
       @if (!isMultiplayerMode()) {
-      <button (click)="openConnectionDialog()" class="btn btn-multiplayer">🔗 Play Online</button>
+      <button (click)="openConnectionDialog()" class="btn btn-multiplayer">
+        <span class="btn-icon">🔗</span> Play Online
+      </button>
       } @else {
-      <button (click)="disconnectMultiplayer()" class="btn btn-disconnect">❌ Disconnect</button>
+      <button (click)="disconnectMultiplayer()" class="btn btn-disconnect">
+        <span class="btn-icon">❌</span> Disconnect
+      </button>
       }
     </div>
 
@@ -91,26 +117,30 @@
   <div class="board-wrapper board-area">
     <!-- Top Player Info -->
     <div
-      class="player-info top w-full flex justify-between items-center px-4 py-2 bg-slate-800/40 rounded-lg mb-2 border border-slate-700/30"
+      class="player-info top w-full flex justify-start items-center px-4 py-3 bg-slate-800/40 rounded-lg mb-2 border border-slate-700/30 min-h-[4rem] transition-all duration-300"
+      [class.active-turn]="
+        (orientation() === 'white' && turn() === 'black') ||
+        (orientation() === 'black' && turn() === 'white')
+      "
     >
       @if (orientation() === 'white') {
-      <div class="player-identity flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-slate-400"></div>
-        <span class="text-slate-200 font-medium">Black</span>
-      </div>
-      <div class="captured-pieces flex -space-x-1">
+      <div class="captured-pieces flex flex-wrap -space-x-3">
         @for(p of capturedByBlack(); track $index) {
-        <img [src]="getPieceUrl(p, 'white')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        <img
+          [src]="getPieceUrl(p, 'white')"
+          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
+          alt="captured piece"
+        />
         }
       </div>
       } @else {
-      <div class="player-identity flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-white border border-slate-400"></div>
-        <span class="text-slate-200 font-medium">White</span>
-      </div>
-      <div class="captured-pieces flex -space-x-1">
+      <div class="captured-pieces flex flex-wrap -space-x-3">
         @for(p of capturedByWhite(); track $index) {
-        <img [src]="getPieceUrl(p, 'black')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        <img
+          [src]="getPieceUrl(p, 'black')"
+          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
+          alt="captured piece"
+        />
         }
       </div>
       }
@@ -129,26 +159,30 @@
     {{ currentBoardTheme() }}
     <!-- Bottom Player Info -->
     <div
-      class="player-info bottom w-full flex justify-between items-center px-4 py-2 bg-slate-800/40 rounded-lg mt-2 border border-slate-700/30"
+      class="player-info bottom w-full flex justify-start items-center px-4 py-3 bg-slate-800/40 rounded-lg mt-2 border border-slate-700/30 min-h-[4rem] transition-all duration-300"
+      [class.active-turn]="
+        (orientation() === 'white' && turn() === 'white') ||
+        (orientation() === 'black' && turn() === 'black')
+      "
     >
       @if (orientation() === 'white') {
-      <div class="player-identity flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-white border border-slate-400"></div>
-        <span class="text-slate-200 font-medium">White</span>
-      </div>
-      <div class="captured-pieces flex -space-x-1">
+      <div class="captured-pieces flex flex-wrap -space-x-3">
         @for(p of capturedByWhite(); track $index) {
-        <img [src]="getPieceUrl(p, 'black')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        <img
+          [src]="getPieceUrl(p, 'black')"
+          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
+          alt="captured piece"
+        />
         }
       </div>
       } @else {
-      <div class="player-identity flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-slate-400"></div>
-        <span class="text-slate-200 font-medium">Black</span>
-      </div>
-      <div class="captured-pieces flex -space-x-1">
+      <div class="captured-pieces flex flex-wrap -space-x-3">
         @for(p of capturedByBlack(); track $index) {
-        <img [src]="getPieceUrl(p, 'white')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        <img
+          [src]="getPieceUrl(p, 'white')"
+          class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"
+          alt="captured piece"
+        />
         }
       </div>
       }

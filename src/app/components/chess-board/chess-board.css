@@ -15,7 +15,7 @@
   min-height: 100vh;
   justify-content: center;
   align-items: stretch;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
 }
 
 .controls-area {
@@ -36,13 +36,25 @@
   max-width: 600px;
 }
 
+.player-info.active-turn {
+  background: rgba(14, 116, 144, 0.4);
+  border-color: rgba(34, 211, 238, 0.6);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+  transform: scale(1.01);
+}
+
 .chessboard {
   width: 600px; /* Adjust as needed */
   height: 600px;
 }
 
 .controls-panel {
-  @apply bg-slate-800/50 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-slate-700/50;
+  background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+  backdrop-filter: blur(16px);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(6, 182, 212, 0.3);
   grid-area: controls;
   display: flex;
   flex-direction: column;
@@ -52,11 +64,22 @@
 }
 
 .status-card {
-  @apply bg-slate-900/30 rounded-xl p-4 mb-4 border border-slate-700/30 backdrop-blur-sm shadow-xl;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .status-card h3 {
-  @apply text-white text-lg font-medium mb-3 border-b border-white/10 pb-2;
+  color: #e0f2fe;
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
 }
 
 .moves-list-vertical {
@@ -98,13 +121,13 @@
 
 /* Move number styling */
 .move-number {
-  @apply flex items-center justify-center text-purple-300 font-mono text-sm pointer-events-none font-medium;
+  @apply flex items-center justify-center text-cyan-300 font-mono text-sm pointer-events-none font-medium;
 }
 
 /* Button styling for moves */
 .move-btn {
   @apply flex items-center justify-center py-1 rounded text-sm font-medium transition-all duration-150;
-  @apply text-gray-300 hover:text-white hover:bg-purple-600/30 active:bg-purple-600/50 active:scale-95;
+  @apply text-gray-300 hover:text-white hover:bg-cyan-600/30 active:bg-cyan-600/50 active:scale-95;
 }
 
 /* Empty state */
@@ -118,34 +141,45 @@
 
 .btn {
   @apply flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg;
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-violet-900/20 active:shadow-none;
+  @apply bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-cyan-900/20 active:shadow-none;
 }
 
 .btn-primary:hover {
-  @apply shadow-purple-500/50 brightness-110;
+  @apply shadow-cyan-500/50 brightness-110;
 }
 
 .btn-secondary {
-  @apply bg-slate-700 text-white border-0 shadow-slate-900/20;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
 .btn-secondary:hover {
-  @apply bg-slate-600 brightness-110;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%);
+  transform: scale(1.05);
 }
 
 .btn-multiplayer {
-  @apply bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-emerald-900/20 active:shadow-none col-span-2;
+  @apply bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-teal-900/20 active:shadow-none col-span-2;
 }
 
 .btn-multiplayer:hover {
-  @apply shadow-emerald-500/50 brightness-110;
+  @apply shadow-teal-500/50 brightness-110;
 }
 
 .btn-disconnect {
-  @apply bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-red-900/20 active:shadow-none col-span-2;
+  @apply bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-red-900/20 active:shadow-none col-span-2;
 }
 
 .btn-disconnect:hover {
@@ -154,7 +188,11 @@
 
 /* Multiplayer Status */
 .multiplayer-status {
-  @apply bg-slate-900/40 rounded-xl p-4 border border-emerald-500/30 backdrop-blur-sm;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(20, 184, 166, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 .status-header {
@@ -166,7 +204,7 @@
 }
 
 .status-dot.connected {
-  @apply bg-emerald-500;
+  @apply bg-teal-500;
 }
 
 .status-text {
@@ -239,6 +277,19 @@
 .chessboard.theme-wood {
   --board-light: #e8c49e; /* Fallback */
   --board-dark: #8b5a2b; /* Fallback */
+}
+
+.chessboard.theme-wood ::ng-deep .cg-wrap cg-board {
+  background-image: url('../../../assets/wood.svg') !important;
+}
+
+.chessboard.theme-marble {
+  --board-light: #e8e8e8;
+  --board-dark: #2c2c2c;
+}
+
+.chessboard.theme-marble ::ng-deep .cg-wrap cg-board {
+  background-image: url('../../../assets/marble.svg') !important;
 }
 
 /* Apply variables to chessground internals */
