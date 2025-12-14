@@ -7,28 +7,42 @@ import {
   signal,
   OnDestroy,
   computed,
+  effect,
 } from '@angular/core';
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
-import { Api } from 'chessground/api';
+import { Api as ChessgroundApi } from 'chessground/api';
 import { Color, Key } from 'chessground/types';
 import { AnalysisPanel } from '../analysis-panel/analysis-panel';
 import { Stockfish } from '../../services/stockfish';
 import { OptionsDialog } from '../options-dialog/options-dialog';
 import { OpeningExplorer } from '../opening-explorer/opening-explorer';
-import { NgClass } from '@angular/common';
+import { NgClass, TitleCasePipe } from '@angular/common';
+import { AiAssistant } from '../ai-assistant/ai-assistant';
+import { ConnectionDialog } from '../connection-dialog/connection-dialog';
+import { WebRTCService, ConnectionRole, ConnectionStatus } from '../../services/webrtc.service';
+import { GameSyncService, MoveData } from '../../services/game-sync.service';
 
 @Component({
   selector: 'app-chess-board',
-  imports: [AnalysisPanel, OptionsDialog, OpeningExplorer, NgClass],
+  imports: [
+    AnalysisPanel,
+    OptionsDialog,
+    OpeningExplorer,
+    NgClass,
+    AiAssistant,
+    TitleCasePipe,
+    ConnectionDialog,
+  ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
 })
 export class ChessBoard implements AfterViewInit, OnDestroy {
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
 
-  private chessground!: Api;
+  private chessgroundApi!: ChessgroundApi;
   private chess = new Chess();
+  protected Math = Math;
 
   // Signals for reactive state
   fen = signal(this.chess.fen());
@@ -53,14 +67,85 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
   // Options
   showOptions = signal(false);
-  currentBoardTheme = signal('default');
+  currentBoardTheme = signal('blue');
   currentPieceTheme = signal('default');
   whitePlayerType = signal<'human' | 'computer'>('human');
   blackPlayerType = signal<'human' | 'computer'>('human');
+
+  currentBoardThemeChanged = effect(() => {
+    const newTheme = this.currentBoardTheme();
+    if (this.chessgroundApi) {
+      this.chessgroundApi.setShapes;
+      this.chessgroundApi.redrawAll();
+    }
+  });
+
+  getPieceUrl(piece: string, color: 'white' | 'black'): string {
+    const themeMap: Record<string, string> = {
+      default: 'cburnett',
+      merida: 'merida',
+      alpha: 'alpha',
+      cheq: 'cheq',
+      leipzig: 'leipzig',
+      // Add others if they exist in options
+    };
+
+    // Fallback to cburnett if unknown
+    const selectedTheme = themeMap[this.currentPieceTheme()] || 'cburnett';
+    const colorChar = color === 'white' ? 'w' : 'b';
+    // Piece char should be uppercase for the URL (wP, bN etc are standard in lila repo)
+    const pieceChar = piece.toUpperCase();
+
+    return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${selectedTheme}/${colorChar}${pieceChar}.svg`;
+  }
+
   whiteComputerElo = signal(1350);
   blackComputerElo = signal(1350);
 
-  constructor(private stockfish: Stockfish) {}
+  // Captured pieces
+  capturedByWhite = signal<string[]>([]);
+  capturedByBlack = signal<string[]>([]);
+
+  // WebRTC Multiplayer
+  showConnectionDialog = signal(false);
+  isMultiplayerMode = signal(false);
+  multiplayerRole = signal<ConnectionRole>(null);
+  connectionStatus = signal<ConnectionStatus>('disconnected');
+  isMyTurn = signal(true); // In multiplayer, tracks if it's this player's turn
+
+  constructor(
+    private stockfish: Stockfish,
+    private webrtc: WebRTCService,
+    private gameSync: GameSyncService
+  ) {
+    // Subscribe to remote moves from peer
+    this.gameSync.remoteMoves.subscribe((moveData: MoveData) => {
+      this.handleRemoteMove(moveData);
+    });
+
+    this.gameSync.remoteResets.subscribe(() => {
+      this.resetGame();
+    });
+
+    this.gameSync.remoteUndos.subscribe(() => {
+      this.undoMove();
+    });
+
+    // Subscribe to connection status
+    this.webrtc.connectionStatus.subscribe((status) => {
+      this.connectionStatus.set(status);
+    });
+
+    this.webrtc.role.subscribe((role) => {
+      this.multiplayerRole.set(role);
+      // Host plays white, guest plays black
+      if (role === 'host') {
+        this.isMyTurn.set(true); // White starts
+      } else if (role === 'guest') {
+        this.isMyTurn.set(false); // Black waits
+      }
+    });
+  }
 
   ngAfterViewInit() {
     this.initializeBoard();
@@ -91,7 +176,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   private applyNewConfig() {
-    this.chessground.set({
+    this.chessgroundApi.set({
       drawable: { visible: true },
     });
     // Forcing a redraw/reconfig for themes usually involves CSS class changes on the container
@@ -110,7 +195,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   private initializeBoard() {
-    this.chessground = Chessground(this.boardElement.nativeElement, {
+    this.chessgroundApi = Chessground(this.boardElement.nativeElement, {
       fen: this.chess.fen(),
       orientation: 'white',
       movable: {
@@ -149,6 +234,15 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   private onMove(orig: Key, dest: Key) {
+    // In multiplayer mode, check if it's this player's turn
+    if (this.isMultiplayerMode() && !this.isMyTurn()) {
+      console.warn('Not your turn!');
+      this.chessgroundApi.set({
+        fen: this.chess.fen(),
+      });
+      return;
+    }
+
     try {
       const move = this.chess.move({
         from: orig,
@@ -158,7 +252,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
       if (move) {
         this.updateGameState();
-        this.chessground.set({
+        this.chessgroundApi.set({
           fen: this.chess.fen(),
           turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
           movable: {
@@ -166,10 +260,16 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
             dests: this.getValidMoves(),
           },
         });
+
+        // Send move to peer if in multiplayer mode
+        if (this.isMultiplayerMode() && this.connectionStatus() === 'connected') {
+          this.gameSync.sendMove(orig, dest, move.promotion, this.chess.fen());
+          this.isMyTurn.set(false); // Now it's opponent's turn
+        }
       }
     } catch (e) {
       // Invalid move, reset the board
-      this.chessground.set({
+      this.chessgroundApi.set({
         fen: this.chess.fen(),
       });
     }
@@ -250,6 +350,30 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.isStalemate.set(this.chess.isStalemate());
     this.moveHistory.set(this.chess.history());
 
+    // Calculate captured pieces
+    const history = this.chess.history({ verbose: true });
+    const whiteCaptures: string[] = [];
+    const blackCaptures: string[] = [];
+
+    for (const move of history) {
+      if (move.captured) {
+        if (move.color === 'w') {
+          whiteCaptures.push(move.captured);
+        } else {
+          blackCaptures.push(move.captured);
+        }
+      }
+    }
+
+    const sortOrder: Record<string, number> = { q: 1, r: 2, b: 3, n: 4, p: 5 };
+    const sorter = (a: string, b: string) => sortOrder[a] - sortOrder[b];
+
+    whiteCaptures.sort(sorter);
+    blackCaptures.sort(sorter);
+
+    this.capturedByWhite.set(whiteCaptures);
+    this.capturedByBlack.set(blackCaptures);
+
     // Trigger Stockfish analysis
     this.stockfish.analyzePosition(this.chess.fen());
 
@@ -259,7 +383,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
   resetGame() {
     this.chess.reset();
-    this.chessground.set({
+    this.chessgroundApi.set({
       fen: this.chess.fen(),
       turnColor: 'white',
       movable: {
@@ -273,7 +397,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   undoMove() {
     const move = this.chess.undo();
     if (move) {
-      this.chessground.set({
+      this.chessgroundApi.set({
         fen: this.chess.fen(),
         turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
         movable: {
@@ -301,7 +425,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       this.chess.undo();
     }
 
-    this.chessground.set({
+    this.chessgroundApi.set({
       fen: this.chess.fen(),
       turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
       movable: {
@@ -312,8 +436,12 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.updateGameState();
   }
 
+  // ... inside class ...
+  orientation = signal<'white' | 'black'>('white');
+
   flipBoard() {
-    this.chessground.toggleOrientation();
+    this.chessgroundApi.toggleOrientation();
+    this.orientation.update((o) => (o === 'white' ? 'black' : 'white'));
   }
 
   onOpeningMove(uci: string) {
@@ -326,7 +454,109 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.openingName.set(name);
   }
 
+  makeSuggestedMove(move: string) {
+    if (!move) return;
+
+    // Try to parse move (it might be UCI "e2e4" or SAN "Nf3")
+    // Chess.js move() handles both if we pass the string as 'move' or 'san'
+    try {
+      let result = this.chess.move(move);
+      if (!result) {
+        // If failed, maybe it's UCI? chess.js .move({from, to}) needs specific object for UCI-like inputs usually,
+        // but .move('e2e4') works in some versions, or we need to parse it.
+        // Stockfish returns UCI usually (long algebraic).
+        // Let's check length of move.
+        if (move.length === 4 || move.length === 5) {
+          const from = move.substring(0, 2) as Key;
+          const to = move.substring(2, 4) as Key;
+          const promotion = move.length === 5 ? move[4] : undefined;
+          result = this.chess.move({ from, to, promotion: promotion as any });
+        }
+      }
+
+      if (result) {
+        this.chessgroundApi.move(result.from, result.to);
+        this.updateGameState();
+      } else {
+        console.warn('Could not make suggested move:', move);
+      }
+    } catch (e) {
+      console.error('Error making suggested move:', e);
+    }
+  }
+
+  // Multiplayer Methods
+  openConnectionDialog(): void {
+    this.showConnectionDialog.set(true);
+  }
+
+  closeConnectionDialog(): void {
+    this.showConnectionDialog.set(false);
+  }
+
+  onConnectionEstablished(role: ConnectionRole): void {
+    this.isMultiplayerMode.set(true);
+    this.multiplayerRole.set(role);
+    this.showConnectionDialog.set(false);
+
+    // Reset game for new multiplayer session
+    this.resetGame();
+
+    // Disable AI when in multiplayer mode
+    this.whitePlayerType.set('human');
+    this.blackPlayerType.set('human');
+  }
+
+  disconnectMultiplayer(): void {
+    this.webrtc.disconnect();
+    this.isMultiplayerMode.set(false);
+    this.multiplayerRole.set(null);
+    this.isMyTurn.set(true);
+  }
+
+  /**
+   * Handle a move received from the remote peer
+   */
+  private handleRemoteMove(moveData: MoveData): void {
+    console.log('Received remote move:', moveData);
+
+    try {
+      // Make the move on our board
+      const move = this.chess.move({
+        from: moveData.from,
+        to: moveData.to,
+        promotion: moveData.promotion as any,
+      });
+
+      if (move) {
+        // Update the visual board
+        this.chessgroundApi.set({
+          fen: this.chess.fen(),
+          turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
+          movable: {
+            color: this.chess.turn() === 'w' ? 'white' : 'black',
+            dests: this.getValidMoves(),
+          },
+        });
+
+        this.updateGameState();
+        this.isMyTurn.set(true); // Now it's our turn
+      } else {
+        console.error('Failed to apply remote move');
+        // Sync game state
+        this.chess.load(moveData.fen);
+        this.chessgroundApi.set({
+          fen: moveData.fen,
+        });
+        this.updateGameState();
+      }
+    } catch (error) {
+      console.error('Error handling remote move:', error);
+    }
+  }
+
   ngOnDestroy() {
     this.stockfish.destroy();
+    this.webrtc.disconnect();
   }
 }

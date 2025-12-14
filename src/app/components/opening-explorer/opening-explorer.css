@@ -1,12 +1,7 @@
 .explorer-container {
-  background-color: var(--surface-card);
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  color: var(--text-primary);
+  @apply bg-slate-900/30 rounded-xl p-4 border border-slate-700/30 backdrop-blur-sm flex flex-col;
   max-height: 400px;
-  display: flex;
-  flex-direction: column;
+  color: var(--text-primary);
 }
 
 .explorer-header {
@@ -41,23 +36,11 @@
 }
 
 .move-row {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.2s;
-  gap: 1rem;
-}
-
-.move-row:hover {
-  background-color: var(--surface-hover);
+  @apply flex items-center p-2 cursor-pointer border-b border-slate-700/30 gap-4 transition-colors hover:bg-slate-800/50 last:border-0 text-sm;
 }
 
 .move-san {
-  font-weight: bold;
-  min-width: 3rem;
-  font-variant-numeric: tabular-nums;
+  @apply font-medium min-w-[3rem] tabular-nums text-slate-300;
 }
 
 .move-stats {

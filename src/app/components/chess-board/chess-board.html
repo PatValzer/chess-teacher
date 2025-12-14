@@ -1,15 +1,19 @@
 <div class="chess-container">
   <!-- Game Controls -->
   <div class="controls-panel controls-area">
-    <h2 class="text-2xl font-bold mb-4 text-white">Chess Teacher</h2>
+    <h2 class="text-2xl font-semibold mb-4 text-white">Chess Teacher</h2>
 
     <!-- Game Status -->
     <div class="status-card">
       <h3 class="text-lg font-semibold mb-2">Game Status</h3>
       <div class="status-info">
-        <p>
-          <span class="label">Turn:</span> <span class="value capitalize">{{ turn() }}</span>
-        </p>
+        <div
+          class="turn-indicator"
+          [ngClass]="{ 'white-turn': turn() === 'white', 'black-turn': turn() === 'black' }"
+        >
+          <div class="turn-icon"></div>
+          <span class="turn-text">{{ turn() | titlecase }} to move</span>
+        </div>
         @if (isCheck()) {
         <p class="check-warning">⚠️ Check!</p>
         } @if (isCheckmate()) {
@@ -22,18 +26,18 @@
 
     <!-- Move History -->
     <div class="move-history">
-      <h3 class="text-lg font-semibold mb-2">Move History</h3>
-      <div class="moves-list">
+      <h3 class="text-lg font-medium mb-2">Move History</h3>
+      <div class="moves-list-vertical">
         @for (pair of movePairs(); track $index) {
-        <div class="move-pair">
-          <span class="move-number">{{ $index + 1 }}.</span>
-          <span class="move-white">{{ pair.white }}</span>
+        <div class="move-row-pair">
+          <span class="move-number-col">{{ $index + 1 }}.</span>
+          <button class="move-btn-text" (click)="goToMove($index * 2)">{{ pair.white }}</button>
           @if (pair.black) {
-          <span class="move-black">{{ pair.black }}</span>
+          <button class="move-btn-text" (click)="goToMove($index * 2 + 1)">{{ pair.black }}</button>
           }
         </div>
         } @empty {
-        <p class="text-gray-400 text-sm">No moves yet</p>
+        <div class="empty-history">No moves yet</div>
         }
       </div>
     </div>
@@ -44,7 +48,32 @@
       <button (click)="undoMove()" class="btn btn-secondary">↶ Undo</button>
       <button (click)="flipBoard()" class="btn btn-secondary">🔃 Flip Board</button>
       <button (click)="toggleOptions()" class="btn btn-secondary">⚙️ Settings</button>
+
+      @if (!isMultiplayerMode()) {
+      <button (click)="openConnectionDialog()" class="btn btn-multiplayer">🔗 Play Online</button>
+      } @else {
+      <button (click)="disconnectMultiplayer()" class="btn btn-disconnect">❌ Disconnect</button>
+      }
     </div>
+
+    <!-- Multiplayer Status -->
+    @if (isMultiplayerMode()) {
+    <div class="multiplayer-status">
+      <div class="status-header">
+        <span class="status-dot" [class.connected]="connectionStatus() === 'connected'"></span>
+        <span class="status-text">
+          @if (connectionStatus() === 'connected') { Connected } @else if (connectionStatus() ===
+          'connecting') { Connecting... } @else { Disconnected }
+        </span>
+      </div>
+      <div class="role-info">
+        You are playing as: <strong>{{ multiplayerRole() === 'host' ? 'White' : 'Black' }}</strong>
+      </div>
+      @if (!isMyTurn() && connectionStatus() === 'connected') {
+      <div class="waiting-turn">⏳ Waiting for opponent...</div>
+      }
+    </div>
+    }
   </div>
 
   <!-- Analysis Panel -->
@@ -60,16 +89,75 @@
 
   <!-- Chess Board -->
   <div class="board-wrapper board-area">
+    <!-- Top Player Info -->
+    <div
+      class="player-info top w-full flex justify-between items-center px-4 py-2 bg-slate-800/40 rounded-lg mb-2 border border-slate-700/30"
+    >
+      @if (orientation() === 'white') {
+      <div class="player-identity flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+        <span class="text-slate-200 font-medium">Black</span>
+      </div>
+      <div class="captured-pieces flex -space-x-1">
+        @for(p of capturedByBlack(); track $index) {
+        <img [src]="getPieceUrl(p, 'white')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        }
+      </div>
+      } @else {
+      <div class="player-identity flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-white border border-slate-400"></div>
+        <span class="text-slate-200 font-medium">White</span>
+      </div>
+      <div class="captured-pieces flex -space-x-1">
+        @for(p of capturedByWhite(); track $index) {
+        <img [src]="getPieceUrl(p, 'black')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        }
+      </div>
+      }
+    </div>
+
     <div class="board-header">
       @if(openingName()) {
       <span class="opening-label">{{ openingName() }}</span>
       }
     </div>
+
     <div
       #board
-      class="chessboard"
-      [ngClass]="['theme-' + currentBoardTheme(), 'pieces-' + currentPieceTheme()]"
+      class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
     ></div>
+    {{ currentBoardTheme() }}
+    <!-- Bottom Player Info -->
+    <div
+      class="player-info bottom w-full flex justify-between items-center px-4 py-2 bg-slate-800/40 rounded-lg mt-2 border border-slate-700/30"
+    >
+      @if (orientation() === 'white') {
+      <div class="player-identity flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-white border border-slate-400"></div>
+        <span class="text-slate-200 font-medium">White</span>
+      </div>
+      <div class="captured-pieces flex -space-x-1">
+        @for(p of capturedByWhite(); track $index) {
+        <img [src]="getPieceUrl(p, 'black')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        }
+      </div>
+      } @else {
+      <div class="player-identity flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-slate-400"></div>
+        <span class="text-slate-200 font-medium">Black</span>
+      </div>
+      <div class="captured-pieces flex -space-x-1">
+        @for(p of capturedByBlack(); track $index) {
+        <img [src]="getPieceUrl(p, 'white')" class="w-6 h-6 captured-piece" alt="captured piece" />
+        }
+      </div>
+      }
+    </div>
+
+    <app-ai-assistant
+      [currentFen]="fen()"
+      (suggestionClicked)="makeSuggestedMove($event)"
+    ></app-ai-assistant>
   </div>
 
   <app-options-dialog
@@ -84,4 +172,13 @@
     (settingsChange)="updateSettings($event)"
   >
   </app-options-dialog>
+
+  <!-- Connection Dialog -->
+  @if (showConnectionDialog()) {
+  <app-connection-dialog
+    (close)="closeConnectionDialog()"
+    (connected)="onConnectionEstablished($event)"
+  >
+  </app-connection-dialog>
+  }
 </div>

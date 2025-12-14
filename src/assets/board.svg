@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 8 8"
+  shape-rendering="crispEdges"
+>
+  <style>
+    :root {
+      --light: #f0d9b5;
+      --dark:  #b58863;
+    }
+  </style>
+
+  <!-- Row 1 -->
+  <rect x="0" y="0" width="1" height="1" fill="var(--dark)"/>
+  <rect x="1" y="0" width="1" height="1" fill="var(--light)"/>
+  <rect x="2" y="0" width="1" height="1" fill="var(--dark)"/>
+  <rect x="3" y="0" width="1" height="1" fill="var(--light)"/>
+  <rect x="4" y="0" width="1" height="1" fill="var(--dark)"/>
+  <rect x="5" y="0" width="1" height="1" fill="var(--light)"/>
+  <rect x="6" y="0" width="1" height="1" fill="var(--dark)"/>
+  <rect x="7" y="0" width="1" height="1" fill="var(--light)"/>
+
+  <!-- Row 2 -->
+  <rect x="0" y="1" width="1" height="1" fill="var(--light)"/>
+  <rect x="1" y="1" width="1" height="1" fill="var(--dark)"/>
+  <rect x="2" y="1" width="1" height="1" fill="var(--light)"/>
+  <rect x="3" y="1" width="1" height="1" fill="var(--dark)"/>
+  <rect x="4" y="1" width="1" height="1" fill="var(--light)"/>
+  <rect x="5" y="1" width="1" height="1" fill="var(--dark)"/>
+  <rect x="6" y="1" width="1" height="1" fill="var(--light)"/>
+  <rect x="7" y="1" width="1" height="1" fill="var(--dark)"/>
+
+  <!-- Repeat rows -->
+  <use href="#r0" y="2"/>
+</svg>

@@ -1,0 +1,13 @@
+<div class="ai-balloon" *ngIf="isVisible()" [class.analyzing]="isAnalyzing()">
+  <div class="balloon-content">
+    <div class="avatar">🤖</div>
+    <div class="text">
+      {{ message() }}
+      <button *ngIf="suggestion() as move" class="suggestion-btn" (click)="onSuggestionClick()">
+        Try {{ move }}
+      </button>
+    </div>
+    <button class="close-btn" (click)="close()">×</button>
+  </div>
+  <div class="balloon-tail"></div>
+</div>

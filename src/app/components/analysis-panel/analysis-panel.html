@@ -1,40 +1,45 @@
 <div class="analysis-panel">
-  <h3 class="panel-title">Engine Analysis</h3>
-
-  <!-- Evaluation Bar -->
-  <div class="eval-container">
-    <div class="eval-bar-wrapper">
-      <div class="eval-bar-black" [style.height.%]="100 - evaluationBar()"></div>
-      <div class="eval-bar-white" [style.height.%]="evaluationBar()"></div>
+  <div class="panel-content">
+    <!-- Left Column: Evaluation Bar & Score -->
+    <div class="eval-container">
+      <div class="eval-text">
+        <span class="eval-value">{{ evaluationText() }}</span>
+      </div>
+      <div class="eval-bar-wrapper">
+        <div class="eval-bar-black" [style.height.%]="100 - evaluationBar()"></div>
+        <div class="eval-bar-white" [style.height.%]="evaluationBar()"></div>
+      </div>
     </div>
-    <div class="eval-text">
-      <span class="eval-value">{{ evaluationText() }}</span>
+
+    <!-- Right Column: Title & Analysis Info -->
+    <div class="right-column">
+      <h3 class="panel-title">Engine Analysis</h3>
+
+      <!-- Analysis Info -->
+      @if (analysis(); as a) {
+      <div class="analysis-info">
+        <div class="info-row">
+          <span class="label">Depth:</span>
+          <span class="value">{{ a.depth }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Best Move:</span>
+          <span class="value best-move">{{ a.bestMove || 'Calculating...' }}</span>
+        </div>
+        @if (a.pv.length > 0) {
+        <div class="info-row">
+          <span class="label">Line:</span>
+          <span class="value pv-line">{{ a.pv.slice(0, 5).join(' ') }}</span>
+        </div>
+        }
+      </div>
+
+      <button (click)="showBestMove()" class="hint-button">💡 Show Hint</button>
+      } @else {
+      <div class="no-analysis">
+        <p>Make a move to see analysis</p>
+      </div>
+      }
     </div>
   </div>
-
-  <!-- Analysis Info -->
-  @if (analysis(); as a) {
-  <div class="analysis-info">
-    <div class="info-row">
-      <span class="label">Depth:</span>
-      <span class="value">{{ a.depth }}</span>
-    </div>
-    <div class="info-row">
-      <span class="label">Best Move:</span>
-      <span class="value best-move">{{ a.bestMove || 'Calculating...' }}</span>
-    </div>
-    @if (a.pv.length > 0) {
-    <div class="info-row">
-      <span class="label">Line:</span>
-      <span class="value pv-line">{{ a.pv.slice(0, 5).join(' ') }}</span>
-    </div>
-    }
-  </div>
-
-  <button (click)="showBestMove()" class="hint-button">💡 Show Hint</button>
-  } @else {
-  <div class="no-analysis">
-    <p>Make a move to see analysis</p>
-  </div>
-  }
 </div>

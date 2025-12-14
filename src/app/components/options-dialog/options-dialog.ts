@@ -1,4 +1,3 @@
-// Forced update for HMR
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -29,6 +28,7 @@ export class OptionsDialog {
 
   boardThemes = [
     { id: 'default', name: 'Standard (Brown)' },
+    { id: 'wood', name: 'Classic Wood' },
     { id: 'green', name: 'Forest (Green)' },
     { id: 'blue', name: 'Ocean (Blue)' },
     { id: 'purple', name: 'Royal (Purple)' },

@@ -1,0 +1,175 @@
+<div class="dialog-overlay" (click)="closeDialog()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="dialog-header">
+      <h2>🔗 Peer-to-Peer Connection</h2>
+      <button class="close-btn" (click)="closeDialog()" aria-label="Close">×</button>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage()) {
+    <div class="error-banner">⚠️ {{ errorMessage() }}</div>
+    }
+
+    <!-- Step 1: Choose Role -->
+    @if (currentStep() === 'choose-role') {
+    <div class="step-content">
+      <p class="instruction">Choose how you want to connect:</p>
+
+      <div class="role-buttons">
+        <button class="role-btn host-btn" (click)="chooseHost()">
+          <div class="role-icon">🎮</div>
+          <div class="role-title">Host Game</div>
+          <div class="role-description">Create a new game and share the code</div>
+        </button>
+
+        <button class="role-btn guest-btn" (click)="chooseGuest()">
+          <div class="role-icon">🤝</div>
+          <div class="role-title">Join Game</div>
+          <div class="role-description">Connect to an existing game</div>
+        </button>
+      </div>
+
+      <div class="info-box">
+        <strong>How it works:</strong>
+        <ol>
+          <li>One player hosts and shares a QR code or text code</li>
+          <li>The other player scans or pastes the code</li>
+          <li>The joining player shares their response code back</li>
+          <li>Direct peer-to-peer connection established!</li>
+        </ol>
+      </div>
+    </div>
+    }
+
+    <!-- Step 2: Host Waiting for Guest -->
+    @if (currentStep() === 'host-waiting') {
+    <div class="step-content">
+      @if (isGeneratingOffer()) {
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Generating connection code...</p>
+      </div>
+      } @else {
+      <div class="qr-section">
+        <p class="instruction">Share this code with your opponent:</p>
+
+        @if (offerQRCode()) {
+        <div class="qr-code-container">
+          <img [src]="offerQRCode()" alt="Connection QR Code" class="qr-code" />
+        </div>
+        }
+
+        <div class="code-actions">
+          <button class="copy-btn" (click)="copyToClipboard(offerData(), 'offer')">
+            📋 Copy Code
+          </button>
+        </div>
+
+        <details class="code-details">
+          <summary>Show text code</summary>
+          <textarea [value]="offerData()" readonly class="code-textarea" rows="4"></textarea>
+        </details>
+
+        <hr class="divider" />
+
+        <p class="instruction">After they scan, paste their response code here:</p>
+
+        <textarea
+          class="input-textarea"
+          placeholder="Paste the response code from your opponent..."
+          rows="4"
+          (input)="updateScannedAnswer($event)"
+          [value]="scannedAnswerInput()"
+        ></textarea>
+
+        <div class="action-buttons">
+          <button class="secondary-btn" (click)="goBack()">Cancel</button>
+          <button
+            class="primary-btn"
+            (click)="submitScannedAnswer()"
+            [disabled]="!scannedAnswerInput() || isProcessingAnswer()"
+          >
+            @if (isProcessingAnswer()) {
+            <span class="btn-spinner"></span>
+            Connecting... } @else { Connect }
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Step 3: Guest Scanning Offer -->
+    @if (currentStep() === 'guest-scanning') {
+    <div class="step-content">
+      <p class="instruction">Scan the QR code or paste the connection code:</p>
+
+      <textarea
+        class="input-textarea"
+        placeholder="Paste the connection code from the host..."
+        rows="6"
+        (input)="updateScannedOffer($event)"
+        [value]="scannedOfferInput()"
+        autofocus
+      ></textarea>
+
+      <div class="action-buttons">
+        <button class="secondary-btn" (click)="goBack()">Cancel</button>
+        <button
+          class="primary-btn"
+          (click)="submitScannedOffer()"
+          [disabled]="!scannedOfferInput() || isGeneratingAnswer()"
+        >
+          @if (isGeneratingAnswer()) {
+          <span class="btn-spinner"></span>
+          Processing... } @else { Next }
+        </button>
+      </div>
+    </div>
+    }
+
+    <!-- Step 4: Guest Showing Answer -->
+    @if (currentStep() === 'guest-showing-answer') {
+    <div class="step-content">
+      <p class="instruction">Share this response code with the host:</p>
+
+      @if (answerQRCode()) {
+      <div class="qr-code-container">
+        <img [src]="answerQRCode()" alt="Response QR Code" class="qr-code" />
+      </div>
+      }
+
+      <div class="code-actions">
+        <button class="copy-btn" (click)="copyToClipboard(answerData(), 'answer')">
+          📋 Copy Response Code
+        </button>
+      </div>
+
+      <details class="code-details">
+        <summary>Show text code</summary>
+        <textarea [value]="answerData()" readonly class="code-textarea" rows="4"></textarea>
+      </details>
+
+      <div class="waiting-message">
+        <div class="pulse-dot"></div>
+        <p>Waiting for host to complete connection...</p>
+      </div>
+
+      <div class="action-buttons">
+        <button class="secondary-btn" (click)="goBack()">Cancel</button>
+      </div>
+    </div>
+    }
+
+    <!-- Step 5: Connected -->
+    @if (currentStep() === 'connected') {
+    <div class="step-content success-state">
+      <div class="success-icon">✓</div>
+      <h3>Connected!</h3>
+      <p>Peer-to-peer connection established successfully.</p>
+      <p class="sub-text">Starting game...</p>
+    </div>
+    }
+  </div>
+</div>

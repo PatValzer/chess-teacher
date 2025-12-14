@@ -2,16 +2,16 @@
   @apply bg-slate-900/50 rounded-xl p-4 border border-slate-700/30;
 }
 
-.panel-title {
-  @apply text-lg font-semibold mb-4 text-purple-300;
+.panel-content {
+  @apply flex gap-6;
 }
 
 .eval-container {
-  @apply flex items-center gap-4 mb-4;
+  @apply flex flex-col items-center gap-2;
 }
 
 .eval-bar-wrapper {
-  @apply relative w-12 h-48 bg-slate-800 rounded-lg overflow-hidden border border-slate-600;
+  @apply relative w-8 h-48 bg-slate-800 rounded-lg overflow-hidden border border-slate-600;
   display: flex;
   flex-direction: column;
 }
@@ -27,11 +27,19 @@
 }
 
 .eval-text {
-  @apply flex flex-col items-center;
+  @apply flex justify-center;
 }
 
 .eval-value {
-  @apply text-2xl font-bold text-white;
+  @apply text-sm font-bold text-white;
+}
+
+.right-column {
+  @apply flex-1 flex flex-col;
+}
+
+.panel-title {
+  @apply text-lg font-semibold mb-4 text-purple-300;
 }
 
 .analysis-info {
@@ -59,7 +67,7 @@
 }
 
 .hint-button {
-  @apply w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/50;
+  @apply w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-purple-500/50 mt-auto;
 }
 
 .no-analysis {

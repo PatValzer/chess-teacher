@@ -1,0 +1,89 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+export interface AiFeedback {
+  feedback: string;
+  suggestedMove?: string; // e.g., "e2e4" or "Nf3"
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class OpenRouterService {
+  private apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+  // TODO: Replace with user's actual API key or move to environment file
+  private apiKey = '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';
+
+  constructor(private http: HttpClient) {}
+
+  generateFeedback(
+    fen: string,
+    scoreChange: number,
+    isWhiteTurn: boolean,
+    bestMove?: string
+  ): Observable<AiFeedback> {
+    const currentTurn = isWhiteTurn ? 'White' : 'Black';
+    const previousMover = isWhiteTurn ? 'Black' : 'White';
+
+    const prompt = `
+You are a witty chess coach. 
+The current position FEN is: ${fen}.
+It's ${currentTurn}'s turn to move.
+
+${previousMover} just moved, and the evaluation changed by ${scoreChange.toFixed(
+      2
+    )} pawns from their perspective.
+(Positive change = good move by ${previousMover}, Negative change = bad move by ${previousMover}).
+
+The chess engine's best move for ${currentTurn} is: ${bestMove || 'analyzing...'}
+
+Provide:
+1. A brief, witty comment on ${previousMover}'s last move (max 12 words)
+2. Return the engine's best move EXACTLY as given: ${bestMove}
+
+Return ONLY valid JSON (no markdown, no code blocks):
+{
+  "feedback": "your witty comment here",
+  "suggestedMove": "the exact move from above"
+}
+    `.trim();
+
+    const body = {
+      model: 'openai/gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a helpful and witty chess coach. Output valid JSON only.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      response_format: { type: 'json_object' },
+    };
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.apiKey}`,
+      'Content-Type': 'application/json',
+      // key for identifying app to OpenRouter
+      'HTTP-Referer': 'http://localhost:4200',
+      'X-Title': 'Chess Teacher',
+    });
+
+    return this.http.post<any>(this.apiUrl, body, { headers }).pipe(
+      map((response) => {
+        const content = response.choices?.[0]?.message?.content;
+        try {
+          return JSON.parse(content);
+        } catch (e) {
+          console.error('Failed to parse AI response:', content);
+          return { feedback: content || 'Interesting move...' };
+        }
+      }),
+      catchError((error) => {
+        console.error('OpenRouter API Error:', error);
+        return of({ feedback: 'Thinking failed me...' });
+      })
+    );
+  }
+}
