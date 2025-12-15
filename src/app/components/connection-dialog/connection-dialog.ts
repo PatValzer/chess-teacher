@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, signal, effect } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WebRTCService, ConnectionStatus, ConnectionRole } from '../../services/webrtc.service';
 import QRCode from 'qrcode';
@@ -19,8 +19,8 @@ type ConnectionStep =
   styleUrl: './connection-dialog.css',
 })
 export class ConnectionDialog {
-  @Output() close = new EventEmitter<void>();
-  @Output() connected = new EventEmitter<ConnectionRole>();
+  close = output<void>();
+  connected = output<ConnectionRole>();
 
   currentStep = signal<ConnectionStep>('choose-role');
   connectionStatus = signal<ConnectionStatus>('disconnected');

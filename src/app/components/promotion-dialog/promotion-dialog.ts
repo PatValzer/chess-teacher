@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-promotion-dialog',
@@ -8,12 +8,12 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   imports: [],
 })
 export class PromotionDialog {
-  @Input() visible = false;
-  @Input() color: 'white' | 'black' = 'white';
-  @Input() pieceTheme = 'default';
+  visible = input(false);
+  color = input<'white' | 'black'>('white');
+  pieceTheme = input('default');
 
-  @Output() promotionSelected = new EventEmitter<'q' | 'r' | 'b' | 'n'>();
-  @Output() cancelled = new EventEmitter<void>();
+  promotionSelected = output<'q' | 'r' | 'b' | 'n'>();
+  cancelled = output<void>();
 
   // Helper to get piece URL (duplicated from ChessBoard for self-containment)
   getPieceUrl(piece: string): string {
@@ -25,8 +25,8 @@ export class PromotionDialog {
       leipzig: 'leipzig',
     };
 
-    const selectedTheme = themeMap[this.pieceTheme] || 'cburnett';
-    const colorChar = this.color === 'white' ? 'w' : 'b';
+    const selectedTheme = themeMap[this.pieceTheme()] || 'cburnett';
+    const colorChar = this.color() === 'white' ? 'w' : 'b';
     const pieceChar = piece.toUpperCase();
 
     return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${selectedTheme}/${colorChar}${pieceChar}.svg`;

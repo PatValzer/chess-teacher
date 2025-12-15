@@ -9,7 +9,10 @@ import {
   computed,
   effect,
   inject,
+  PLATFORM_ID,
+  Inject,
 } from '@angular/core';
+import { isPlatformBrowser, NgClass } from '@angular/common';
 import { Chess } from 'chess.js';
 import { Chessground } from 'chessground';
 import { Api as ChessgroundApi } from 'chessground/api';
@@ -52,12 +55,18 @@ import { PromotionDialog } from '../promotion-dialog/promotion-dialog';
     OpeningGraphComponent,
     ChessBoard3dComponent,
     PromotionDialog,
+    NgClass,
   ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
 })
 export class ChessBoard implements AfterViewInit, OnDestroy {
   @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
+
+  // Responsive state
+  isSmallScreen = signal(false);
+  private mediaQueryList: MediaQueryList | null = null;
+  private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
 
   private chessgroundApi!: ChessgroundApi;
   private chess = new Chess();
@@ -194,8 +203,19 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   constructor(
     private stockfish: Stockfish,
     private webrtc: WebRTCService,
-    private gameSync: GameSyncService
+    private gameSync: GameSyncService,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.mediaQueryList = window.matchMedia('(max-width: 900px)');
+      this.isSmallScreen.set(this.mediaQueryList.matches);
+
+      this.mediaQueryListener = (e: MediaQueryListEvent) => {
+        this.isSmallScreen.set(e.matches);
+      };
+
+      this.mediaQueryList.addEventListener('change', this.mediaQueryListener);
+    }
     // Subscribe to remote moves from peer
     this.gameSync.remoteMoves.subscribe((moveData: MoveData) => {
       this.handleRemoteMove(moveData);
@@ -703,5 +723,9 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.stockfish.destroy();
     this.webrtc.disconnect();
+
+    if (this.mediaQueryList && this.mediaQueryListener) {
+      this.mediaQueryList.removeEventListener('change', this.mediaQueryListener);
+    }
   }
 }

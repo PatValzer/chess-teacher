@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { ConnectionRole, ConnectionStatus } from '../../services/webrtc.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
@@ -10,7 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   imports: [TranslatePipe],
 })
 export class MultiplayerStatus {
-  @Input({ required: true }) connectionStatus: ConnectionStatus = 'disconnected';
-  @Input({ required: true }) multiplayerRole: ConnectionRole = null;
-  @Input({ required: true }) isMyTurn = false;
+  connectionStatus = input.required<ConnectionStatus>();
+  multiplayerRole = input.required<ConnectionRole>();
+  isMyTurn = input.required<boolean>();
 }

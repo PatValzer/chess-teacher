@@ -313,7 +313,7 @@
 /* Responsive behavior */
 
 /* Tablet Layout */
-@media (max-width: 1200px) {
+@media (max-width: 1350px) {
   .chess-container {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
@@ -333,7 +333,7 @@
 }
 
 /* Mobile Layout */
-@media (max-width: 800px) {
+@media (max-width: 900px) {
   .chess-container {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -348,5 +348,10 @@
   .controls-panel {
     width: 100%;
     max-width: 100%;
+  }
+
+  /* Ensure board area doesn't force huge height on mobile if stacked vertically */
+  .board-area {
+    gap: 0.5rem;
   }
 }

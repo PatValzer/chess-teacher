@@ -1,27 +1,27 @@
 <div class="action-buttons">
   <button (click)="resetGame.emit()" class="btn btn-primary">
-    <span class="btn-icon">🔄</span> {{ 'GAME.RESET' | translate }}
+    <span class="material-icons btn-icon">refresh</span> {{ 'GAME.RESET' | translate }}
   </button>
   <button (click)="undoMove.emit()" class="btn btn-secondary">
-    <span class="btn-icon">↶</span> {{ 'GAME.UNDO' | translate }}
+    <span class="material-icons btn-icon">undo</span> {{ 'GAME.UNDO' | translate }}
   </button>
   <button (click)="flipBoard.emit()" class="btn btn-secondary">
-    <span class="btn-icon">🔃</span> {{ 'GAME.FLIP' | translate }}
+    <span class="material-icons btn-icon">flip_camera_android</span> {{ 'GAME.FLIP' | translate }}
   </button>
   <button (click)="toggleOptions.emit()" class="btn btn-secondary">
-    <span class="btn-icon">⚙️</span> {{ 'GAME.SETTINGS' | translate }}
+    <span class="material-icons btn-icon">settings</span> {{ 'GAME.SETTINGS' | translate }}
   </button>
   <button (click)="toggle3d.emit()" class="btn btn-secondary">
-    <span class="btn-icon">🧊</span> 3D
+    <span class="material-icons btn-icon">view_in_ar</span> 3D
   </button>
 
-  @if (!isMultiplayerMode) {
+  @if (!isMultiplayerMode()) {
   <button (click)="openConnectionDialog.emit()" class="btn btn-multiplayer">
-    <span class="btn-icon">🔗</span> {{ 'GAME.PLAY_ONLINE' | translate }}
+    <span class="material-icons btn-icon">link</span> {{ 'GAME.PLAY_ONLINE' | translate }}
   </button>
   } @else {
   <button (click)="disconnectMultiplayer.emit()" class="btn btn-disconnect">
-    <span class="btn-icon">❌</span> {{ 'GAME.DISCONNECT' | translate }}
+    <span class="material-icons btn-icon">link_off</span> {{ 'GAME.DISCONNECT' | translate }}
   </button>
   }
 </div>

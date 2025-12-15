@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslationService, Language } from '../../services/translation.service';
@@ -11,17 +11,17 @@ import { TranslationService, Language } from '../../services/translation.service
   imports: [FormsModule, TranslatePipe],
 })
 export class OptionsDialog {
-  @Input() visible = false;
-  @Input() currentBoardTheme = 'default';
-  @Input() currentPieceTheme = 'default';
-  @Input() whitePlayerType: 'human' | 'computer' = 'human';
-  @Input() blackPlayerType: 'human' | 'computer' = 'human';
-  @Input() whiteComputerElo: number = 1350;
-  @Input() blackComputerElo: number = 1350;
-  @Input() currentLanguage: Language = 'en';
+  visible = input(false);
+  currentBoardTheme = input('default');
+  currentPieceTheme = input('default');
+  whitePlayerType = input<'human' | 'computer'>('human');
+  blackPlayerType = input<'human' | 'computer'>('human');
+  whiteComputerElo = input<number>(1350);
+  blackComputerElo = input<number>(1350);
+  currentLanguage = input<Language>('en');
 
-  @Output() close = new EventEmitter<void>();
-  @Output() settingsChange = new EventEmitter<{
+  close = output<void>();
+  settingsChange = output<{
     boardTheme: string;
     pieceTheme: string;
     whitePlayerType: 'human' | 'computer';
@@ -61,16 +61,16 @@ export class OptionsDialog {
   selectedBlackComputerElo: number = 1350;
   selectedLanguage: Language = 'en';
 
-  constructor(private translationService: TranslationService) {}
-
-  ngOnChanges() {
-    this.selectedBoardTheme = this.currentBoardTheme;
-    this.selectedPieceTheme = this.currentPieceTheme;
-    this.selectedWhitePlayerType = this.whitePlayerType;
-    this.selectedBlackPlayerType = this.blackPlayerType;
-    this.selectedWhiteComputerElo = this.whiteComputerElo;
-    this.selectedBlackComputerElo = this.blackComputerElo;
-    this.selectedLanguage = this.currentLanguage;
+  constructor(private translationService: TranslationService) {
+    effect(() => {
+      this.selectedBoardTheme = this.currentBoardTheme();
+      this.selectedPieceTheme = this.currentPieceTheme();
+      this.selectedWhitePlayerType = this.whitePlayerType();
+      this.selectedBlackPlayerType = this.blackPlayerType();
+      this.selectedWhiteComputerElo = this.whiteComputerElo();
+      this.selectedBlackComputerElo = this.blackComputerElo();
+      this.selectedLanguage = this.currentLanguage();
+    });
   }
 
   changeLanguage(lang: Language) {
@@ -93,11 +93,11 @@ export class OptionsDialog {
   }
 
   cancel() {
-    this.selectedBoardTheme = this.currentBoardTheme;
-    this.selectedPieceTheme = this.currentPieceTheme;
+    this.selectedBoardTheme = this.currentBoardTheme();
+    this.selectedPieceTheme = this.currentPieceTheme();
     // Revert language if changed
-    if (this.selectedLanguage !== this.currentLanguage) {
-      this.translationService.setLanguage(this.currentLanguage);
+    if (this.selectedLanguage !== this.currentLanguage()) {
+      this.translationService.setLanguage(this.currentLanguage());
     }
     this.close.emit();
   }

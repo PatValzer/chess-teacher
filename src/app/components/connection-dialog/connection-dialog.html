@@ -18,13 +18,13 @@
 
       <div class="role-buttons">
         <button class="role-btn host-btn" (click)="chooseHost()">
-          <div class="role-icon">🎮</div>
+          <div class="role-icon material-icons">sports_esports</div>
           <div class="role-title">{{ 'P2P.HOST_GAME' | translate }}</div>
           <div class="role-description">{{ 'P2P.HOST_DESC' | translate }}</div>
         </button>
 
         <button class="role-btn guest-btn" (click)="chooseGuest()">
-          <div class="role-icon">🤝</div>
+          <div class="role-icon material-icons">group_add</div>
           <div class="role-title">{{ 'P2P.JOIN_GAME' | translate }}</div>
           <div class="role-description">{{ 'P2P.JOIN_DESC' | translate }}</div>
         </button>
@@ -62,7 +62,7 @@
 
         <div class="code-actions">
           <button class="copy-btn" (click)="copyToClipboard(offerData(), 'offer')">
-            📋 {{ 'P2P.COPY_CODE' | translate }}
+            <span class="material-icons">content_copy</span> {{ 'P2P.COPY_CODE' | translate }}
           </button>
         </div>
 
@@ -84,11 +84,11 @@
         ></textarea>
 
         <div class="action-buttons">
-          <button class="secondary-btn" (click)="goBack()">
+          <button class="btn btn-secondary" (click)="goBack()">
             {{ 'SETTINGS.CANCEL' | translate }}
           </button>
           <button
-            class="primary-btn"
+            class="btn btn-primary"
             (click)="submitScannedAnswer()"
             [disabled]="!scannedAnswerInput() || isProcessingAnswer()"
           >
@@ -117,11 +117,11 @@
       ></textarea>
 
       <div class="action-buttons">
-        <button class="secondary-btn" (click)="goBack()">
+        <button class="btn btn-secondary" (click)="goBack()">
           {{ 'SETTINGS.CANCEL' | translate }}
         </button>
         <button
-          class="primary-btn"
+          class="btn btn-primary"
           (click)="submitScannedOffer()"
           [disabled]="!scannedOfferInput() || isGeneratingAnswer()"
         >
@@ -146,7 +146,7 @@
 
       <div class="code-actions">
         <button class="copy-btn" (click)="copyToClipboard(answerData(), 'answer')">
-          📋 {{ 'P2P.COPY_RESPONSE' | translate }}
+          <span class="material-icons">content_copy</span> {{ 'P2P.COPY_RESPONSE' | translate }}
         </button>
       </div>
 
@@ -161,7 +161,7 @@
       </div>
 
       <div class="action-buttons">
-        <button class="secondary-btn" (click)="goBack()">
+        <button class="btn btn-secondary" (click)="goBack()">
           {{ 'SETTINGS.CANCEL' | translate }}
         </button>
       </div>
@@ -171,7 +171,7 @@
     <!-- Step 5: Connected -->
     @if (currentStep() === 'connected') {
     <div class="step-content success-state">
-      <div class="success-icon">✓</div>
+      <div class="success-icon material-icons">check_circle</div>
       <h3>{{ 'P2P.CONNECTED_TITLE' | translate }}</h3>
       <p>{{ 'P2P.P2P_SUCCESS' | translate }}</p>
       <p class="sub-text">{{ 'P2P.STARTING' | translate }}</p>

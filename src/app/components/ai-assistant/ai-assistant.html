@@ -10,18 +10,20 @@
     (click)="toggleCollapse()"
     [title]="isCollapsed() ? 'Show AI' : 'Hide AI'"
   >
-    <span class="icon">{{ isCollapsed() ? '◀' : '▶' }}</span>
+    <span class="material-icons icon">{{ isCollapsed() ? 'chevron_left' : 'chevron_right' }}</span>
   </button>
 
   <!-- Content Area -->
   <div class="sidebar-inner">
     <div class="sidebar-header">
       <div class="title-row">
-        <div class="avatar" [class.pulse]="isAnalyzing()">🤖</div>
+        <div class="avatar material-icons" [class.pulse]="isAnalyzing()">smart_toy</div>
         <span class="title">Coach</span>
       </div>
       <div class="actions">
-        <button class="close-btn" (click)="close()" title="Turn Off AI">×</button>
+        <button class="close-btn material-icons" (click)="close()" title="Turn Off AI">
+          close
+        </button>
       </div>
     </div>
 
@@ -37,13 +39,15 @@
       <div class="level-selection" *ngIf="showLevelSelection()">
         <p class="select-label">Select skill level:</p>
         <button (click)="selectLevel('beginner')">
-          <span class="emoji">👶</span> {{ 'AI.LEVEL_BEGINNER' | translate }}
+          <span class="emoji material-icons">sentiment_satisfied_alt</span>
+          {{ 'AI.LEVEL_BEGINNER' | translate }}
         </button>
         <button (click)="selectLevel('intermediate')">
-          <span class="emoji">🎓</span> {{ 'AI.LEVEL_INTERMEDIATE' | translate }}
+          <span class="emoji material-icons">school</span> {{ 'AI.LEVEL_INTERMEDIATE' | translate }}
         </button>
         <button (click)="selectLevel('advanced')">
-          <span class="emoji">🏆</span> {{ 'AI.LEVEL_ADVANCED' | translate }}
+          <span class="emoji material-icons">emoji_events</span>
+          {{ 'AI.LEVEL_ADVANCED' | translate }}
         </button>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chess } from 'chess.js';
 import {
@@ -28,7 +28,7 @@ interface GraphNode {
   styleUrls: ['./opening-graph.css'],
 })
 export class OpeningGraphComponent {
-  @Output() close = new EventEmitter<void>();
+  close = output<void>();
 
   private openingService = inject(OpeningDataService);
 

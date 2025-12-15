@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 
 export interface MovePair {
   white: string;
@@ -12,7 +12,7 @@ export interface MovePair {
   standalone: true,
 })
 export class MoveHistory {
-  @Input({ required: true }) movePairs: MovePair[] = [];
+  movePairs = input.required<MovePair[]>();
 
-  @Output() goToMove = new EventEmitter<number>();
+  goToMove = output<number>();
 }

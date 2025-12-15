@@ -1,11 +1,11 @@
 <div
   class="captured-pieces flex flex-wrap"
-  [class.flex-col]="orientation === 'vertical'"
-  [class.-space-y-3]="orientation === 'vertical'"
-  [class.flex-row]="orientation === 'horizontal'"
-  [class.-space-x-3]="orientation === 'horizontal'"
+  [class.flex-col]="orientation() === 'vertical'"
+  [class.-space-y-1]="orientation() === 'vertical'"
+  [class.flex-row]="orientation() === 'horizontal'"
+  [class.-space-x-1]="orientation() === 'horizontal'"
 >
-  @for(p of pieces; track $index) {
+  @for(p of pieces(); track $index) {
   <img
     [src]="getPieceUrl(p)"
     class="w-10 h-10 captured-piece drop-shadow-lg filter brightness-110 hover:z-10 relative transition-transform hover:scale-110"

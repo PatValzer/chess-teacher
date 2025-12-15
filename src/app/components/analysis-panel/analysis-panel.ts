@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, input } from '@angular/core';
 import { Stockfish, EngineAnalysis } from '../../services/stockfish';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -11,7 +11,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   styleUrl: './analysis-panel.css',
 })
 export class AnalysisPanel implements OnInit, OnDestroy {
-  @Input() fen: string = '';
+  fen = input<string>('');
 
   analysis = signal<EngineAnalysis | null>(null);
   private subscription?: Subscription;
@@ -21,7 +21,7 @@ export class AnalysisPanel implements OnInit, OnDestroy {
     const a = this.analysis();
     if (!a) return '+0.0';
 
-    const turn = this.fen.split(' ')[1] || 'w';
+    const turn = this.fen().split(' ')[1] || 'w';
     const modifier = turn === 'b' ? -1 : 1;
 
     if (a.mate !== undefined) {
@@ -38,7 +38,7 @@ export class AnalysisPanel implements OnInit, OnDestroy {
     const a = this.analysis();
     if (!a) return 50;
 
-    const turn = this.fen.split(' ')[1] || 'w';
+    const turn = this.fen().split(' ')[1] || 'w';
     const modifier = turn === 'b' ? -1 : 1;
 
     if (a.mate !== undefined) {
@@ -68,8 +68,8 @@ export class AnalysisPanel implements OnInit, OnDestroy {
   }
 
   async showBestMove() {
-    if (!this.fen) return;
-    const bestMove = await this.stockfish.getBestMove(this.fen);
+    if (!this.fen()) return;
+    const bestMove = await this.stockfish.getBestMove(this.fen());
     alert(`Best move: ${bestMove}`);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -9,13 +9,13 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   imports: [TranslatePipe],
 })
 export class ActionButtons {
-  @Input() isMultiplayerMode = false;
+  isMultiplayerMode = input(false);
 
-  @Output() resetGame = new EventEmitter<void>();
-  @Output() undoMove = new EventEmitter<void>();
-  @Output() flipBoard = new EventEmitter<void>();
-  @Output() toggleOptions = new EventEmitter<void>();
-  @Output() openConnectionDialog = new EventEmitter<void>();
-  @Output() disconnectMultiplayer = new EventEmitter<void>();
-  @Output() toggle3d = new EventEmitter<void>();
+  resetGame = output<void>();
+  undoMove = output<void>();
+  flipBoard = output<void>();
+  toggleOptions = output<void>();
+  openConnectionDialog = output<void>();
+  disconnectMultiplayer = output<void>();
+  toggle3d = output<void>();
 }

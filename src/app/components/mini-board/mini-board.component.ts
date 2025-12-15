@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, computed, signal } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chess } from 'chess.js';
 
@@ -49,22 +49,14 @@ import { Chess } from 'chess.js';
     `,
   ],
 })
-export class MiniBoardComponent implements OnChanges {
-  @Input() fen: string = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+export class MiniBoardComponent {
+  fen = input<string>('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
   // 8x8 array of Piece | null
-  board = signal<(any | null)[][]>([]);
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['fen']) {
-      this.updateBoard();
-    }
-  }
-
-  updateBoard() {
-    const chess = new Chess(this.fen);
-    this.board.set(chess.board());
-  }
+  board = computed(() => {
+    const chess = new Chess(this.fen());
+    return chess.board();
+  });
 
   getPieceUrl(piece: { type: string; color: string }): string {
     const colorChar = piece.color === 'w' ? 'w' : 'b';

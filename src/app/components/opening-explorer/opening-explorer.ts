@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  inject,
-} from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OpeningService, OpeningResponse, OpeningMove } from '../../services/opening';
 import { TranslatePipe } from '../../pipes/translate.pipe';
@@ -18,10 +10,10 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   templateUrl: './opening-explorer.html',
   styleUrl: './opening-explorer.css',
 })
-export class OpeningExplorer implements OnChanges {
-  @Input() fen: string = '';
-  @Output() moveSelected = new EventEmitter<string>();
-  @Output() openingName = new EventEmitter<string>();
+export class OpeningExplorer {
+  fen = input<string>('');
+  moveSelected = output<string>();
+  openingName = output<string>();
 
   private openingService = inject(OpeningService);
 
@@ -29,17 +21,20 @@ export class OpeningExplorer implements OnChanges {
   loading = false;
   error: string | null = null;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fen'] && this.fen) {
-      this.fetchOpeningData();
-    }
+  constructor() {
+    effect(() => {
+      const fen = this.fen();
+      if (fen) {
+        this.fetchOpeningData();
+      }
+    });
   }
 
   private fetchOpeningData() {
     this.loading = true;
     this.error = null;
 
-    this.openingService.getOpeningData(this.fen).subscribe({
+    this.openingService.getOpeningData(this.fen()).subscribe({
       next: (data) => {
         this.openingData = data;
         this.loading = false;

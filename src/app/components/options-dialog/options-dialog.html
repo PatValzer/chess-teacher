@@ -1,9 +1,9 @@
-@if (visible) {
+@if (visible()) {
 <div class="dialog-overlay" (click)="cancel()">
   <div class="dialog-content" (click)="$event.stopPropagation()">
     <div class="dialog-header">
       <h2 class="text-xl font-bold text-white">{{ 'SETTINGS.TITLE' | translate }}</h2>
-      <button class="close-btn" (click)="cancel()">×</button>
+      <button class="close-btn material-icons" (click)="cancel()">close</button>
     </div>
 
     <div class="dialog-body">

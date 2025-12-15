@@ -41,19 +41,8 @@
   <div class="side-panel">
     <app-analysis-panel [fen]="fen()"></app-analysis-panel>
 
-    <button
-      (click)="toggleOpeningGraph()"
-      class="w-full mb-4 py-3 px-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white rounded-lg font-semibold shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2 border border-teal-400/30"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
-        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
-      </svg>
+    <button (click)="toggleOpeningGraph()" class="btn btn-multiplayer w-full mb-4 justify-center">
+      <span class="material-icons">map</span>
       Opening Map
     </button>
     <app-opening-explorer
@@ -66,33 +55,48 @@
 
   <!-- Chess Board -->
   <div class="board-wrapper board-area">
-    <div class="flex flex-row items-center justify-center gap-4 w-full">
+    <div
+      class="flex items-stretch justify-center gap-4 w-full"
+      [class.flex-col]="isSmallScreen()"
+      [class.flex-row]="!isSmallScreen()"
+    >
       <!-- Left Player Info (Opponent) -->
       <div
-        class="player-info side !w-auto !max-w-none flex flex-col items-center px-3 py-4 bg-slate-800/40 rounded-lg border border-slate-700/30 min-w-[3.5rem] transition-all duration-300 self-stretch"
+        class="player-info side flex flex-col justify-center items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
+        [ngClass]="{
+          '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
+          'w-full': isSmallScreen()
+        }"
+        [class]="
+          orientation() === 'white'
+            ? 'bg-slate-950/40 border-slate-800/50'
+            : 'bg-slate-300/20 border-slate-200/30'
+        "
         [class.active-turn]="
           (orientation() === 'white' && turn() === 'black') ||
           (orientation() === 'black' && turn() === 'white')
         "
       >
         @if (orientation() === 'white') {
+        <!-- Opponent is Black -->
         <app-captured-pieces
           [pieces]="capturedByBlack()"
           color="white"
           [pieceTheme]="currentPieceTheme()"
-          orientation="vertical"
+          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
         ></app-captured-pieces>
         } @else {
+        <!-- Opponent is White -->
         <app-captured-pieces
           [pieces]="capturedByWhite()"
           color="black"
           [pieceTheme]="currentPieceTheme()"
-          orientation="vertical"
+          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
         ></app-captured-pieces>
         }
       </div>
 
-      <div class="flex flex-col items-center gap-2">
+      <div class="flex flex-col items-center gap-2 shrink-0">
         <div class="board-header">
           @if(openingName()) {
           <span class="opening-label">{{ openingName() }}</span>
@@ -117,25 +121,36 @@
 
       <!-- Right Player Info (Self) -->
       <div
-        class="player-info side !w-auto !max-w-none flex flex-col items-center px-3 py-4 bg-slate-800/40 rounded-lg border border-slate-700/30 min-w-[3.5rem] transition-all duration-300 self-stretch"
+        class="player-info side flex flex-col justify-center items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
+        [ngClass]="{
+          '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
+          'w-full': isSmallScreen()
+        }"
+        [class]="
+          orientation() === 'white'
+            ? 'bg-slate-300/20 border-slate-200/30'
+            : 'bg-slate-950/40 border-slate-800/50'
+        "
         [class.active-turn]="
           (orientation() === 'white' && turn() === 'white') ||
           (orientation() === 'black' && turn() === 'black')
         "
       >
         @if (orientation() === 'white') {
+        <!-- Self is White -->
         <app-captured-pieces
           [pieces]="capturedByWhite()"
           color="black"
           [pieceTheme]="currentPieceTheme()"
-          orientation="vertical"
+          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
         ></app-captured-pieces>
         } @else {
+        <!-- Self is Black -->
         <app-captured-pieces
           [pieces]="capturedByBlack()"
           color="white"
           [pieceTheme]="currentPieceTheme()"
-          orientation="vertical"
+          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
         ></app-captured-pieces>
         }
       </div>
@@ -150,28 +165,28 @@
         (click)="goToStart()"
         [title]="'GAME.NAV_START' | translate"
       >
-        <span class="btn-icon text-lg">⏮</span>
+        <span class="material-icons btn-icon text-lg">first_page</span>
       </button>
       <button
         class="btn btn-secondary !px-4 !py-2"
         (click)="stepBack()"
         [title]="'GAME.NAV_PREV' | translate"
       >
-        <span class="btn-icon text-lg">◀</span>
+        <span class="material-icons btn-icon text-lg">chevron_left</span>
       </button>
       <button
         class="btn btn-secondary !px-4 !py-2"
         (click)="stepForward()"
         [title]="'GAME.NAV_NEXT' | translate"
       >
-        <span class="btn-icon text-lg">▶</span>
+        <span class="material-icons btn-icon text-lg">chevron_right</span>
       </button>
       <button
         class="btn btn-secondary !px-4 !py-2"
         (click)="goToEnd()"
         [title]="'GAME.NAV_END' | translate"
       >
-        <span class="btn-icon text-lg">⏭</span>
+        <span class="material-icons btn-icon text-lg">last_page</span>
       </button>
     </div>
 

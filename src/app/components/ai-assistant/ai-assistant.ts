@@ -1,17 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  OnDestroy,
-  signal,
-  computed,
-  effect,
-  input,
-  output,
-  ElementRef,
-  HostListener,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, effect, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Stockfish, EngineAnalysis } from '../../services/stockfish';
 import { OpenRouterService, AiFeedback } from '../../services/open-router';
@@ -39,7 +26,7 @@ export class AiAssistant implements OnInit, OnDestroy {
   showLevelSelection = signal<boolean>(false);
 
   // Toolbar state
-  isCollapsed = signal<boolean>(false);
+  isCollapsed = signal<boolean>(true);
 
   // Track previous evaluation to compare against
   // We store it as absolute perspective (positive = white advantage)

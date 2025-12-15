@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
@@ -9,7 +9,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
   imports: [TranslatePipe],
 })
 export class GameStatus {
-  @Input({ required: true }) isCheck = false;
-  @Input({ required: true }) isCheckmate = false;
-  @Input({ required: true }) isStalemate = false;
+  isCheck = input.required<boolean>();
+  isCheckmate = input.required<boolean>();
+  isStalemate = input.required<boolean>();
 }
