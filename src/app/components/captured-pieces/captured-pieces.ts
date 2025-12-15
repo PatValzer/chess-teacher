@@ -10,6 +10,7 @@ export class CapturedPieces {
   @Input({ required: true }) pieces: string[] = [];
   @Input({ required: true }) color: 'white' | 'black' = 'white'; // Color of the captured pieces (so their image color)
   @Input() pieceTheme = 'default';
+  @Input() orientation: 'horizontal' | 'vertical' = 'horizontal';
 
   getPieceUrl(piece: string): string {
     const themeMap: Record<string, string> = {

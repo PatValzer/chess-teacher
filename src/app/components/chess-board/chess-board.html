@@ -66,71 +66,79 @@
 
   <!-- Chess Board -->
   <div class="board-wrapper board-area">
-    <!-- Top Player Info -->
-    <div
-      class="player-info top w-full flex justify-start items-center px-4 py-3 bg-slate-800/40 rounded-lg mb-2 border border-slate-700/30 min-h-[4rem] transition-all duration-300"
-      [class.active-turn]="
-        (orientation() === 'white' && turn() === 'black') ||
-        (orientation() === 'black' && turn() === 'white')
-      "
-    >
-      @if (orientation() === 'white') {
-      <app-captured-pieces
-        [pieces]="capturedByBlack()"
-        color="white"
-        [pieceTheme]="currentPieceTheme()"
-      ></app-captured-pieces>
-      } @else {
-      <app-captured-pieces
-        [pieces]="capturedByWhite()"
-        color="black"
-        [pieceTheme]="currentPieceTheme()"
-      ></app-captured-pieces>
-      }
-    </div>
+    <div class="flex flex-row items-center justify-center gap-4 w-full">
+      <!-- Left Player Info (Opponent) -->
+      <div
+        class="player-info side !w-auto !max-w-none flex flex-col items-center px-3 py-4 bg-slate-800/40 rounded-lg border border-slate-700/30 min-w-[3.5rem] transition-all duration-300 self-stretch"
+        [class.active-turn]="
+          (orientation() === 'white' && turn() === 'black') ||
+          (orientation() === 'black' && turn() === 'white')
+        "
+      >
+        @if (orientation() === 'white') {
+        <app-captured-pieces
+          [pieces]="capturedByBlack()"
+          color="white"
+          [pieceTheme]="currentPieceTheme()"
+          orientation="vertical"
+        ></app-captured-pieces>
+        } @else {
+        <app-captured-pieces
+          [pieces]="capturedByWhite()"
+          color="black"
+          [pieceTheme]="currentPieceTheme()"
+          orientation="vertical"
+        ></app-captured-pieces>
+        }
+      </div>
 
-    <div class="board-header">
-      @if(openingName()) {
-      <span class="opening-label">{{ openingName() }}</span>
-      }
-    </div>
+      <div class="flex flex-col items-center gap-2">
+        <div class="board-header">
+          @if(openingName()) {
+          <span class="opening-label">{{ openingName() }}</span>
+          }
+        </div>
 
-    @if (is3dMode()) {
-    <app-chess-board-3d
-      [fen]="fen()"
-      [orientation]="orientation()"
-      [boardTheme]="currentBoardTheme()"
-      (move)="on3dMove($event)"
-      class="chessboard-3d"
-    ></app-chess-board-3d>
-    } @else {
-    <div
-      #board
-      class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
-    ></div>
-    }
-    <!-- {{ currentBoardTheme() }} -->
-    <!-- Bottom Player Info -->
-    <div
-      class="player-info bottom w-full flex justify-start items-center px-4 py-3 bg-slate-800/40 rounded-lg mt-2 border border-slate-700/30 min-h-[4rem] transition-all duration-300"
-      [class.active-turn]="
-        (orientation() === 'white' && turn() === 'white') ||
-        (orientation() === 'black' && turn() === 'black')
-      "
-    >
-      @if (orientation() === 'white') {
-      <app-captured-pieces
-        [pieces]="capturedByWhite()"
-        color="black"
-        [pieceTheme]="currentPieceTheme()"
-      ></app-captured-pieces>
-      } @else {
-      <app-captured-pieces
-        [pieces]="capturedByBlack()"
-        color="white"
-        [pieceTheme]="currentPieceTheme()"
-      ></app-captured-pieces>
-      }
+        @if (is3dMode()) {
+        <app-chess-board-3d
+          [fen]="fen()"
+          [orientation]="orientation()"
+          [boardTheme]="currentBoardTheme()"
+          (move)="on3dMove($event)"
+          class="chessboard-3d"
+        ></app-chess-board-3d>
+        } @else {
+        <div
+          #board
+          class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
+        ></div>
+        }
+      </div>
+
+      <!-- Right Player Info (Self) -->
+      <div
+        class="player-info side !w-auto !max-w-none flex flex-col items-center px-3 py-4 bg-slate-800/40 rounded-lg border border-slate-700/30 min-w-[3.5rem] transition-all duration-300 self-stretch"
+        [class.active-turn]="
+          (orientation() === 'white' && turn() === 'white') ||
+          (orientation() === 'black' && turn() === 'black')
+        "
+      >
+        @if (orientation() === 'white') {
+        <app-captured-pieces
+          [pieces]="capturedByWhite()"
+          color="black"
+          [pieceTheme]="currentPieceTheme()"
+          orientation="vertical"
+        ></app-captured-pieces>
+        } @else {
+        <app-captured-pieces
+          [pieces]="capturedByBlack()"
+          color="white"
+          [pieceTheme]="currentPieceTheme()"
+          orientation="vertical"
+        ></app-captured-pieces>
+        }
+      </div>
     </div>
 
     <!-- Game Navigation -->
@@ -197,4 +205,13 @@
   } @if (showOpeningGraph()) {
   <app-opening-graph (close)="toggleOpeningGraph()"></app-opening-graph>
   }
+
+  <!-- Promotion Dialog -->
+  <app-promotion-dialog
+    [visible]="showPromotionDialog()"
+    [color]="promotionColor"
+    [pieceTheme]="currentPieceTheme()"
+    (promotionSelected)="onPromotionSelected($event)"
+    (cancelled)="onPromotionCancelled()"
+  ></app-promotion-dialog>
 </div>

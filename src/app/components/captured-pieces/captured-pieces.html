@@ -1,4 +1,10 @@
-<div class="captured-pieces flex flex-wrap -space-x-3">
+<div
+  class="captured-pieces flex flex-wrap"
+  [class.flex-col]="orientation === 'vertical'"
+  [class.-space-y-3]="orientation === 'vertical'"
+  [class.flex-row]="orientation === 'horizontal'"
+  [class.-space-x-3]="orientation === 'horizontal'"
+>
   @for(p of pieces; track $index) {
   <img
     [src]="getPieceUrl(p)"

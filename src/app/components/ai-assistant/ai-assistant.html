@@ -1,28 +1,51 @@
 <div
-  class="ai-balloon"
+  class="ai-sidebar"
   *ngIf="isVisible()"
+  [class.collapsed]="isCollapsed()"
   [class.analyzing]="isAnalyzing()"
-  [style.left.px]="position.x"
-  [style.top.px]="position.y"
-  (mousedown)="onMouseDown($event)"
 >
-  <div class="balloon-content">
-    <div class="avatar">🤖</div>
-    <div class="text">
-      {{ message() | translate }}
+  <!-- Toggle Tab (Always visible) -->
+  <button
+    class="toggle-tab"
+    (click)="toggleCollapse()"
+    [title]="isCollapsed() ? 'Show AI' : 'Hide AI'"
+  >
+    <span class="icon">{{ isCollapsed() ? '◀' : '▶' }}</span>
+  </button>
+
+  <!-- Content Area -->
+  <div class="sidebar-inner">
+    <div class="sidebar-header">
+      <div class="title-row">
+        <div class="avatar" [class.pulse]="isAnalyzing()">🤖</div>
+        <span class="title">Coach</span>
+      </div>
+      <div class="actions">
+        <button class="close-btn" (click)="close()" title="Turn Off AI">×</button>
+      </div>
+    </div>
+
+    <div class="sidebar-body">
+      <div class="message-box">
+        <p class="message-text">{{ message() | translate }}</p>
+      </div>
+
       <button *ngIf="suggestion() as move" class="suggestion-btn" (click)="onSuggestionClick()">
-        {{ 'AI.TRY' | translate }} {{ move }}
+        {{ 'AI.TRY' | translate }} <span class="move-badge">{{ move }}</span>
       </button>
 
       <div class="level-selection" *ngIf="showLevelSelection()">
-        <button (click)="selectLevel('beginner')">👶 {{ 'AI.LEVEL_BEGINNER' | translate }}</button>
-        <button (click)="selectLevel('intermediate')">
-          🎓 {{ 'AI.LEVEL_INTERMEDIATE' | translate }}
+        <p class="select-label">Select skill level:</p>
+        <button (click)="selectLevel('beginner')">
+          <span class="emoji">👶</span> {{ 'AI.LEVEL_BEGINNER' | translate }}
         </button>
-        <button (click)="selectLevel('advanced')">🏆 {{ 'AI.LEVEL_ADVANCED' | translate }}</button>
+        <button (click)="selectLevel('intermediate')">
+          <span class="emoji">🎓</span> {{ 'AI.LEVEL_INTERMEDIATE' | translate }}
+        </button>
+        <button (click)="selectLevel('advanced')">
+          <span class="emoji">🏆</span> {{ 'AI.LEVEL_ADVANCED' | translate }}
+        </button>
       </div>
     </div>
-    <button class="close-btn" (click)="close()">×</button>
   </div>
-  <div class="balloon-tail"></div>
 </div>

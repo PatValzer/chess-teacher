@@ -1,4 +1,4 @@
-.move-history {
+:host {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -6,9 +6,37 @@
   overflow: hidden;
 }
 
+.move-history {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 .moves-list-vertical {
-  @apply flex flex-col w-full overflow-y-auto;
+  @apply flex flex-col w-full overflow-y-auto pr-2;
   flex: 1;
+
+  /* Scrollbar Styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+.moves-list-vertical::-webkit-scrollbar {
+  width: 6px;
+}
+
+.moves-list-vertical::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.moves-list-vertical::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.moves-list-vertical::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(148, 163, 184, 0.5);
 }
 
 .move-row-pair {

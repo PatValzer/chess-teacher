@@ -38,10 +38,8 @@ export class AiAssistant implements OnInit, OnDestroy {
 
   showLevelSelection = signal<boolean>(false);
 
-  // Dragging state
-  position = { x: window.innerWidth - 400, y: 100 };
-  private isDragging = false;
-  private dragOffset = { x: 0, y: 0 };
+  // Toolbar state
+  isCollapsed = signal<boolean>(false);
 
   // Track previous evaluation to compare against
   // We store it as absolute perspective (positive = white advantage)
@@ -62,31 +60,9 @@ export class AiAssistant implements OnInit, OnDestroy {
     });
   }
 
-  onMouseDown(event: MouseEvent) {
-    // Prevent dragging if clicking buttons
-    if ((event.target as HTMLElement).tagName === 'BUTTON') return;
-
-    this.isDragging = true;
-    this.dragOffset = {
-      x: event.clientX - this.position.x,
-      y: event.clientY - this.position.y,
-    };
-    event.preventDefault(); // Prevent text selection
-  }
-
-  @HostListener('window:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
-    if (this.isDragging) {
-      this.position = {
-        x: event.clientX - this.dragOffset.x,
-        y: event.clientY - this.dragOffset.y,
-      };
-    }
-  }
-
-  @HostListener('window:mouseup')
-  onMouseUp() {
-    this.isDragging = false;
+  // Toggle Collapse
+  toggleCollapse() {
+    this.isCollapsed.update((v) => !v);
   }
 
   ngOnInit() {
@@ -105,6 +81,7 @@ export class AiAssistant implements OnInit, OnDestroy {
 
   private askForLevel() {
     this.isVisible.set(true);
+    this.isCollapsed.set(false); // Ensure it's open to ask
     this.message.set('AI.ASK_LEVEL');
     this.showLevelSelection.set(true);
   }
@@ -137,6 +114,9 @@ export class AiAssistant implements OnInit, OnDestroy {
     this.message.set('AI.THINKING');
     this.suggestion.set(undefined);
     this.isVisible.set(true);
+    // Note: We don't auto-expand here to avoid annoyance,
+    // but we could if the user wants auto-pop.
+    // Let's keep existing state.
   }
 
   private processAnalysis(analysis: EngineAnalysis | null) {

@@ -33,6 +33,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 import { GameStatus } from '../game-status/game-status';
 import { OpeningGraphComponent } from '../opening-graph/opening-graph.component';
 import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.component';
+import { PromotionDialog } from '../promotion-dialog/promotion-dialog';
 
 @Component({
   selector: 'app-chess-board',
@@ -50,6 +51,7 @@ import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.componen
     GameStatus,
     OpeningGraphComponent,
     ChessBoard3dComponent,
+    PromotionDialog,
   ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
@@ -148,6 +150,26 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   multiplayerRole = signal<ConnectionRole>(null);
   connectionStatus = signal<ConnectionStatus>('disconnected');
   isMyTurn = signal(true); // In multiplayer, tracks if it's this player's turn
+
+  // Promotion
+  showPromotionDialog = signal(false);
+  pendingPromotionMove: { from: Key; to: Key } | null = null;
+  promotionColor: 'white' | 'black' = 'white';
+
+  onPromotionSelected(promotion: 'q' | 'r' | 'b' | 'n') {
+    if (this.pendingPromotionMove) {
+      const { from, to } = this.pendingPromotionMove;
+      this.executeMove(from, to, promotion);
+      this.showPromotionDialog.set(false);
+      this.pendingPromotionMove = null;
+    }
+  }
+
+  onPromotionCancelled() {
+    this.showPromotionDialog.set(false);
+    this.pendingPromotionMove = null;
+    this.chessgroundApi.set({ fen: this.chess.fen() });
+  }
 
   is3dMode = signal(false);
 
@@ -296,11 +318,26 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       return;
     }
 
+    // Check for promotion
+    const moves = this.chess.moves({ verbose: true });
+    const isPromotion = moves.some((m) => m.from === orig && m.to === dest && m.promotion);
+
+    if (isPromotion) {
+      this.pendingPromotionMove = { from: orig, to: dest };
+      this.promotionColor = this.chess.turn() === 'w' ? 'white' : 'black';
+      this.showPromotionDialog.set(true);
+      return;
+    }
+
+    this.executeMove(orig, dest, 'q');
+  }
+
+  private executeMove(orig: Key, dest: Key, promotion: string = 'q') {
     try {
       const move = this.chess.move({
         from: orig,
         to: dest,
-        promotion: 'q', // Always promote to queen for now
+        promotion: promotion as string,
       });
 
       if (move) {
@@ -393,7 +430,8 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       if (bestMove) {
         const from = bestMove.substring(0, 2) as Key;
         const to = bestMove.substring(2, 4) as Key;
-        this.onMove(from, to);
+        const promotion = bestMove.length === 5 ? bestMove[4] : undefined;
+        this.executeMove(from, to, promotion);
       } else {
         console.warn('Stockfish failed to return a move (timeout or error).');
       }
@@ -574,8 +612,12 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
         if (move.length === 4 || move.length === 5) {
           const from = move.substring(0, 2) as Key;
           const to = move.substring(2, 4) as Key;
-          const promotion = move.length === 5 ? move[4] : undefined;
-          result = this.chess.move({ from, to, promotion: promotion as any });
+          const promotion = move.length === 5 ? move[4] : 'q';
+          this.executeMove(from, to, promotion);
+          // result = undefined; // handled by executeMove, but we need return value to know if success?
+          // executeMove doesn't return value.
+          // Let's rely on executeMove. But the original code relied on 'result' to move chessground logic which duplicate executeMove logic.
+          return;
         }
       }
 

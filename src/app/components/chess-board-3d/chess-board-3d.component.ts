@@ -1,17 +1,14 @@
 import {
   Component,
   ElementRef,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  SimpleChanges,
   ViewChild,
   AfterViewInit,
   HostListener,
-  Output,
-  EventEmitter,
   NgZone,
+  OnDestroy,
+  input,
+  output,
+  effect,
 } from '@angular/core';
 import * as THREE from 'three';
 import { Chess, Square } from 'chess.js';
@@ -22,13 +19,13 @@ import { Chess, Square } from 'chess.js';
   styleUrls: ['./chess-board-3d.component.css'],
   standalone: true,
 })
-export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+export class ChessBoard3dComponent implements AfterViewInit, OnDestroy {
   @ViewChild('rendererContainer') rendererContainer!: ElementRef;
 
-  @Input() boardTheme: string = 'default';
-  @Input() fen!: string;
-  @Input() orientation: 'white' | 'black' = 'white';
-  @Output() move = new EventEmitter<{ from: string; to: string }>();
+  boardTheme = input<string>('default');
+  fen = input.required<string>();
+  orientation = input<'white' | 'black'>('white');
+  move = output<{ from: string; to: string }>();
 
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
@@ -50,10 +47,28 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
   private animationId!: number;
   private textureLoader = new THREE.TextureLoader();
 
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone) {
+    effect(() => {
+      const fen = this.fen();
+      this.chess.load(fen);
+      if (this.piecesGroup) {
+        this.updateBoardState();
+      }
+    });
 
-  ngOnInit() {
-    this.chess.load(this.fen);
+    effect(() => {
+      const orientation = this.orientation();
+      if (this.camera) {
+        this.updateCameraPosition();
+      }
+    });
+
+    effect(() => {
+      const theme = this.boardTheme();
+      if (this.boardGroup) {
+        this.createBoard();
+      }
+    });
   }
 
   ngAfterViewInit() {
@@ -65,19 +80,6 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
     });
     // setTimeout to ensure size is correct after layout
     setTimeout(() => this.handleResize(), 0);
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['fen'] && !changes['fen'].firstChange) {
-      this.chess.load(this.fen);
-      this.updateBoardState();
-    }
-    if (changes['orientation'] && !changes['orientation'].firstChange) {
-      this.updateCameraPosition();
-    }
-    if (changes['boardTheme'] && !changes['boardTheme'].firstChange) {
-      this.createBoard(); // Recreate board with new theme
-    }
   }
 
   ngOnDestroy() {
@@ -119,18 +121,26 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
     this.rendererContainer.nativeElement.appendChild(this.renderer.domElement);
 
     // Lighting - Increased intensity
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // Lighting - Updated for better definition of dark pieces
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     this.scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    // Main Key Light
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
     dirLight.position.set(10, 20, 10);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
     this.scene.add(dirLight);
 
+    // Rim/Back Light to catch edges of black pieces
+    const backLight = new THREE.DirectionalLight(0xcceeff, 2.0);
+    backLight.position.set(-10, 15, -5);
+    this.scene.add(backLight);
+
+    // Fill Light
     const pointLight = new THREE.PointLight(0xffaa00, 1.0);
-    pointLight.position.set(-10, 10, -10);
+    pointLight.position.set(-5, 10, 5);
     this.scene.add(pointLight);
 
     this.boardGroup = new THREE.Group();
@@ -155,7 +165,7 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
 
   private updateCameraPosition() {
     if (!this.camera) return;
-    if (this.orientation === 'white') {
+    if (this.orientation() === 'white') {
       this.camera.position.set(0, 16, 12); // Moved back/up for lower FOV
       this.camera.lookAt(0, -1, 0); // Look slightly below center to center board better
     } else {
@@ -176,11 +186,11 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
     let lightColor = 0xf0d9b5; // Default light square color
     let darkColor = 0xb58863; // Default dark (used if we were drawing squares, but here usually texture handles it)
 
-    if (this.boardTheme === 'wood') {
+    if (this.boardTheme() === 'wood') {
       texturePath = 'assets/wood.svg';
       lightColor = 0xe8c49e;
     }
-    if (this.boardTheme === 'marble') {
+    if (this.boardTheme() === 'marble') {
       texturePath = 'assets/marble.svg';
       lightColor = 0xe8e8e8;
     }
@@ -303,11 +313,12 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
   }
 
   private createPieceMesh(type: string, color: 'w' | 'b'): THREE.Object3D {
+    const isWhite = color === 'w';
     const material = new THREE.MeshStandardMaterial({
-      color: color === 'w' ? 0xeecfa1 : 0x8b4513,
-      roughness: 0.4,
-      metalness: 0.2,
-      side: THREE.DoubleSide, // Ensure inside of lathe is rendered if slightly open
+      color: isWhite ? 0xeecfa1 : 0x4b2a15,
+      roughness: isWhite ? 0.5 : 0.2, // Dark pieces smoother to catch highlights
+      metalness: isWhite ? 0.1 : 0.3, // Slight polish for dark pieces
+      side: THREE.DoubleSide,
     });
 
     let mesh: THREE.Mesh | THREE.Group;
@@ -326,35 +337,75 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
     switch (type) {
       case 'p': // Pawn
         const pawnPoints = [
-          new THREE.Vector2(0.3, 0),
-          new THREE.Vector2(0.3, 0.1),
-          new THREE.Vector2(0.2, 0.2),
-          new THREE.Vector2(0.12, 0.5),
-          new THREE.Vector2(0.18, 0.55),
-          new THREE.Vector2(0.12, 0.6),
-          new THREE.Vector2(0, 0.6), // Close top
+          // Base Molding
+          new THREE.Vector2(0.35, 0), // Bottom radius (approx 70% of max width)
+          new THREE.Vector2(0.35, 0.05), // Vertical base
+          new THREE.Vector2(0.33, 0.05), // Step In
+          new THREE.Vector2(0.33, 0.12), // Second vertical step (molded base)
+          new THREE.Vector2(0.28, 0.18), // Curve up from base
+
+          // Body (Column)
+          new THREE.Vector2(0.24, 0.25), // Start of column
+          new THREE.Vector2(0.16, 0.45), // Taper middle
+          new THREE.Vector2(0.12, 0.58), // Thin neck
+
+          // Collar
+          new THREE.Vector2(0.22, 0.6), // Flared Collar bottom
+          new THREE.Vector2(0.22, 0.63), // Collar Rim
+          new THREE.Vector2(0.1, 0.63), // Collar Top (return to neck)
+
+          // Close for head
+          new THREE.Vector2(0, 0.63),
         ];
         const pawnBody = createLathe(pawnPoints);
-        const pawnHead = new THREE.Mesh(new THREE.SphereGeometry(0.15, 32, 32), material);
-        pawnHead.position.y = 0.7;
+
+        // Head (Sphere)
+        const pawnHead = new THREE.Mesh(new THREE.SphereGeometry(0.16, 32, 32), material);
+        pawnHead.position.y = 0.74; // Positioned right above the collar
+
         mesh = new THREE.Group();
         mesh.add(pawnBody);
         mesh.add(pawnHead);
         break;
 
       case 'r': // Rook
+        // Base, straight body, slightly wider top
         const rookPoints = [
           new THREE.Vector2(0.3, 0),
           new THREE.Vector2(0.3, 0.1),
           new THREE.Vector2(0.25, 0.2),
-          new THREE.Vector2(0.22, 0.6),
-          new THREE.Vector2(0.3, 0.7),
-          new THREE.Vector2(0.3, 0.8),
-          new THREE.Vector2(0.2, 0.8), // Inner rim
-          new THREE.Vector2(0.2, 0.75), // Dip
-          new THREE.Vector2(0, 0.75), // Close center dip
+          new THREE.Vector2(0.22, 0.6), // Body
+          new THREE.Vector2(0.32, 0.7), // Flare top start
+          new THREE.Vector2(0, 0.7), // Close for now, we add top details manually
         ];
-        mesh = createLathe(rookPoints);
+        const rookBody = createLathe(rookPoints);
+
+        // Top Rim with Battlements
+        const topGroup = new THREE.Group();
+        topGroup.position.y = 0.7;
+
+        // Main rim cylinder
+        const rimGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.15, 32);
+        const rim = new THREE.Mesh(rimGeo, material);
+        rim.position.y = 0.075;
+        topGroup.add(rim);
+
+        // Battlements (Merlons) around the edge
+        const battlementCount = 6;
+        const radius = 0.26;
+        for (let i = 0; i < battlementCount; i++) {
+          const angle = (i / battlementCount) * Math.PI * 2;
+          const merlon = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.08, 0.08), material);
+          const mx = Math.cos(angle) * radius;
+          const mz = Math.sin(angle) * radius;
+          merlon.position.set(mx, 0.19, mz);
+          merlon.rotation.y = -angle;
+          topGroup.add(merlon);
+        }
+
+        mesh = new THREE.Group();
+        mesh.add(rookBody);
+        mesh.add(topGroup);
         break;
 
       case 'n': // Knight
@@ -396,21 +447,42 @@ export class ChessBoard3dComponent implements OnInit, AfterViewInit, OnDestroy, 
           new THREE.Vector2(0.32, 0.1),
           new THREE.Vector2(0.2, 0.3),
           new THREE.Vector2(0.12, 0.7),
-          new THREE.Vector2(0.2, 0.8),
+          new THREE.Vector2(0.2, 0.8), // Collar
           new THREE.Vector2(0, 0.8), // Close
         ];
         const bishopBody = createLathe(bishopPoints);
 
-        const bishopHead = new THREE.Mesh(new THREE.SphereGeometry(0.18, 32, 32), material);
-        bishopHead.scale.y = 1.4;
-        bishopHead.position.y = 0.95;
+        // Head Group for non-uniform scaling
+        const headGroup = new THREE.Group();
+        headGroup.position.y = 0.95;
+        headGroup.scale.set(1, 1.45, 1); // Elongated head
 
-        const bishopTop = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 16), material);
-        bishopTop.position.y = 1.25;
+        // Sliced Sphere for the "Mitre" cut
+        // phiStart=0.25, phiLength=2PI-0.5 => A wedge missing at angle 0
+        const cutSphereGeo = new THREE.SphereGeometry(0.18, 32, 32, 0.25, Math.PI * 2 - 0.5);
+        const cutSphere = new THREE.Mesh(cutSphereGeo, material);
+        // Rotate so gap is at approx 45 degrees
+        // The gap is centered at phi=0 (positive X axis in standard mapping).
+        // Rotate Z by 45deg moves X axis up-left.
+        cutSphere.rotation.z = Math.PI / 4;
+        cutSphere.rotation.y = -Math.PI / 2; // Adjust to face front/side? Let's stick to simple Z rotation.
+        // Actually, phi=0 is +X. Z rotation rotates X towards Y.
+        // 45deg -> Cut is Top-Right.
+        headGroup.add(cutSphere);
+
+        // Solid Core to make the head look solid (fill the shell)
+        // Since headGroup is scaled Y, a sphere inside would also be ellipsoid.
+        // We want a solid filler.
+        const coreGeo = new THREE.SphereGeometry(0.16, 16, 16);
+        const core = new THREE.Mesh(coreGeo, material);
+        headGroup.add(core);
+
+        const bishopTop = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16), material);
+        bishopTop.position.y = 1.35; // Position relative to world (it's added to mesh, not headGroup)
 
         mesh = new THREE.Group();
         mesh.add(bishopBody);
-        mesh.add(bishopHead);
+        mesh.add(headGroup);
         mesh.add(bishopTop);
         break;
 
