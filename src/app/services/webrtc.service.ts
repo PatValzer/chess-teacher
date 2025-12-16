@@ -16,6 +16,15 @@ export interface SignalingData {
   ice?: RTCIceCandidateInit;
 }
 
+/**
+ * WebRTCService
+ *
+ * Manages peer-to-peer connections for multiplayer games.
+ * Handles:
+ * - Signaling exchanges (Offer/Answer/ICE).
+ * - DataChannel creation for low-latency game moves and chat.
+ * - Connection state tracking.
+ */
 @Injectable({
   providedIn: 'root',
 })

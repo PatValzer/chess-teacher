@@ -15,6 +15,7 @@
     <!-- Action Buttons -->
     <app-action-buttons
       [isMultiplayerMode]="isMultiplayerMode()"
+      [is3dMode]="is3dMode()"
       (resetGame)="resetGame()"
       (undoMove)="undoMove()"
       (flipBoard)="flipBoard()"
@@ -62,15 +63,15 @@
     >
       <!-- Left Player Info (Opponent) -->
       <div
-        class="player-info side flex flex-col justify-center items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
+        class="player-info side flex flex-col justify-start items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
         [ngClass]="{
           '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
           'w-full': isSmallScreen()
         }"
         [class]="
           orientation() === 'white'
-            ? 'bg-slate-950/40 border-slate-800/50'
-            : 'bg-slate-300/20 border-slate-200/30'
+            ? 'bg-black border-white text-white shadow-md'
+            : 'bg-white border-black text-black shadow-md'
         "
         [class.active-turn]="
           (orientation() === 'white' && turn() === 'black') ||
@@ -121,15 +122,15 @@
 
       <!-- Right Player Info (Self) -->
       <div
-        class="player-info side flex flex-col justify-center items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
+        class="player-info side flex flex-col justify-start items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
         [ngClass]="{
           '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
           'w-full': isSmallScreen()
         }"
         [class]="
           orientation() === 'white'
-            ? 'bg-slate-300/20 border-slate-200/30'
-            : 'bg-slate-950/40 border-slate-800/50'
+            ? 'bg-white border-black text-black shadow-md'
+            : 'bg-black border-white text-white shadow-md'
         "
         [class.active-turn]="
           (orientation() === 'white' && turn() === 'white') ||

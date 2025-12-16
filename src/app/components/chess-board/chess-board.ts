@@ -27,6 +27,7 @@ import { WebRTCService, ConnectionRole, ConnectionStatus } from '../../services/
 import { GameSyncService, MoveData } from '../../services/game-sync.service';
 import { SettingsService, AppSettings } from '../../services/settings.service';
 import { TranslationService } from '../../services/translation.service';
+import { ComputerPlayerService } from '../../services/computer-player.service';
 
 import { ActionButtons } from '../action-buttons/action-buttons';
 import { MoveHistory } from '../move-history/move-history';
@@ -38,6 +39,17 @@ import { OpeningGraphComponent } from '../opening-graph/opening-graph.component'
 import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.component';
 import { PromotionDialog } from '../promotion-dialog/promotion-dialog';
 
+/**
+ * ChessBoard
+ *
+ * The main component responsible for the 2D chess board interface.
+ * It integrates:
+ * - Chess.js for game logic and move validation.
+ * - Chessground for the visual board and interaction.
+ * - Stockfish for AI analysis and opponent moves.
+ * - WebRTC for multiplayer connectivity.
+ * - Various sub-components for history, capture, and analysis.
+ */
 @Component({
   selector: 'app-chess-board',
   imports: [
@@ -204,6 +216,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     private stockfish: Stockfish,
     private webrtc: WebRTCService,
     private gameSync: GameSyncService,
+    private computerPlayer: ComputerPlayerService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
@@ -406,57 +419,23 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     });
 
     if (isComputerTurn && !this.chess.isGameOver()) {
-      // Set the correct ELO for the current turn
       const elo = isWhiteTurn ? this.whiteComputerElo() : this.blackComputerElo();
-      let depth = this.calculateDepthFromElo(elo);
+      const moveCount = this.chess.history().length;
+      const isOpening = moveCount < 10;
 
-      // Speed up opening moves (first 10 plies / 5 full moves)
-      // by capping depth and reducing delay
-      const isOpening = this.chess.history().length < 10;
-      let delay = 500;
+      const bestMove = await this.computerPlayer.getBestMove(
+        this.chess.fen(),
+        elo,
+        moveCount,
+        isOpening
+      );
 
-      if (isOpening) {
-        depth = Math.min(depth, 10); // Cap depth at 10 for opening
-        delay = 200; // Reduce delay for opening
-      }
-
-      // Small delay for realism
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      await this.makeComputerMove(depth);
-    }
-  }
-
-  private calculateDepthFromElo(elo: number): number {
-    // Map 1350 - 2850 to 1 - 20 (approx)
-    // 1350 -> 1
-    // 2850 -> 20
-    // Linear interpolation:
-    const minElo = 1350;
-    const maxElo = 2850;
-    const minDepth = 1;
-    const maxDepth = 20;
-
-    const fraction = (elo - minElo) / (maxElo - minElo);
-    const depth = Math.round(minDepth + fraction * (maxDepth - minDepth));
-    return Math.max(1, Math.min(20, depth));
-  }
-
-  private async makeComputerMove(depth: number) {
-    const fen = this.chess.fen();
-    console.log(`Making computer move for FEN: ${fen} at DEPTH: ${depth}`);
-    try {
-      const bestMove = await this.stockfish.getBestMove(fen, depth);
-      console.log('Stockfish returned best move:', bestMove);
       if (bestMove) {
         const from = bestMove.substring(0, 2) as Key;
         const to = bestMove.substring(2, 4) as Key;
         const promotion = bestMove.length === 5 ? bestMove[4] : undefined;
         this.executeMove(from, to, promotion);
-      } else {
-        console.warn('Stockfish failed to return a move (timeout or error).');
       }
-    } catch (err) {
-      console.error('Error making computer move:', err);
     }
   }
 

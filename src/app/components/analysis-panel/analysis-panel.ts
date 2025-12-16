@@ -1,9 +1,24 @@
-import { Component, OnInit, OnDestroy, signal, computed, input } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  signal,
+  computed,
+  input,
+  effect,
+  untracked,
+} from '@angular/core';
 import { Stockfish, EngineAnalysis } from '../../services/stockfish';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
+/**
+ * AnalysisPanel
+ *
+ * Displays the current Stockfish evaluation (CP or Mate).
+ * Includes a visual evaluation bar and debug options.
+ */
 @Component({
   selector: 'app-analysis-panel',
   imports: [CommonModule, TranslatePipe],
@@ -53,7 +68,15 @@ export class AnalysisPanel implements OnInit, OnDestroy {
     return Math.max(0, Math.min(100, normalized));
   });
 
-  constructor(private stockfish: Stockfish) {}
+  constructor(private stockfish: Stockfish) {
+    effect(() => {
+      // Clear analysis when FEN changes
+      this.fen();
+      untracked(() => {
+        this.analysis.set(null);
+      });
+    });
+  }
 
   ngOnInit() {
     this.subscription = this.stockfish.analysis$.subscribe((analysis) => {

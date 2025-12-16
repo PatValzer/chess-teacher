@@ -3,6 +3,12 @@ import { CommonModule } from '@angular/common';
 import { OpeningService, OpeningResponse, OpeningMove } from '../../services/opening';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
+/**
+ * OpeningExplorer
+ *
+ * Displays opening book moves and statistics for the current position.
+ * Fetches data from the Lichess opening explorer API (via OpeningService).
+ */
 @Component({
   selector: 'app-opening-explorer',
   standalone: true,

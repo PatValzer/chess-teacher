@@ -11,6 +11,14 @@ type ConnectionStep =
   | 'guest-showing-answer'
   | 'connected';
 
+/**
+ * ConnectionDialog
+ *
+ * Handles the UI for establishing WebRTC connections.
+ * - Generates and displays QR codes for Offers/Answers.
+ * - Scans/Inputs codes from peers.
+ * - Manages the multi-step connection wizard state.
+ */
 @Component({
   selector: 'app-connection-dialog',
   standalone: true,

@@ -12,7 +12,9 @@
     <span class="material-icons btn-icon">settings</span> {{ 'GAME.SETTINGS' | translate }}
   </button>
   <button (click)="toggle3d.emit()" class="btn btn-secondary">
-    <span class="material-icons btn-icon">view_in_ar</span> 3D
+    @if (is3dMode()) {
+    <span class="material-icons btn-icon">grid_on</span> 2D } @else {
+    <span class="material-icons btn-icon">view_in_ar</span> 3D }
   </button>
 
   @if (!isMultiplayerMode()) {

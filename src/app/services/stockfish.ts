@@ -9,6 +9,14 @@ export interface EngineAnalysis {
   depth: number;
 }
 
+/**
+ * Stockfish Service
+ *
+ * Wraps the Stockfish Web Worker to provide chess analysis and computer moves.
+ * - Manages the Worker lifecycle.
+ * - Sends UCI commands.
+ * - Parses engine output (info, bestmove).
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -58,13 +66,31 @@ export class Stockfish {
       if (analysis) {
         this.analysisSubject.next(analysis);
       }
+    } else if (message.startsWith('bestmove')) {
+      // Handle the final best move message
+      const parts = message.split(' ');
+      const move = parts[1];
+      if (move && move !== '(none)') {
+        const current = this.analysisSubject.getValue();
+        // Update the current analysis with the definitive best move
+        this.analysisSubject.next({
+          ...(current || {
+            evaluation: 0,
+            depth: 0,
+            pv: [],
+          }),
+          bestMove: move,
+          // If we receive bestmove, it implies the search for this depth/time is done
+          // We don't necessarily update depth/eval here as they come from info
+        });
+      }
     }
   }
 
   private parseAnalysis(message: string): EngineAnalysis | null {
     const depthMatch = message.match(/depth (\d+)/);
     const scoreMatch = message.match(/score (cp|mate) (-?\d+)/);
-    const pvMatch = message.match(/pv (.+)$/);
+    const pvMatch = message.match(/\bpv (.+)$/);
 
     if (!depthMatch || !scoreMatch) return null;
 
@@ -76,7 +102,7 @@ export class Stockfish {
     const analysis: EngineAnalysis = {
       evaluation: scoreType === 'cp' ? scoreValue : 0,
       depth,
-      bestMove: pv[0] || '',
+      bestMove: pv[0] || '', // Use the first move in PV as best move
       pv,
     };
 

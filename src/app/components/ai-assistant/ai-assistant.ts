@@ -6,6 +6,14 @@ import { SettingsService } from '../../services/settings.service';
 import { Subscription } from 'rxjs';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 
+/**
+ * AiAssistant
+ *
+ * Provides an AI-powered chat interface for move explanations and suggestions.
+ * Integrates:
+ * - Stockfish analysis for objective evaluation.
+ * - OpenRouter (LLM) for natural language feedback.
+ */
 @Component({
   selector: 'app-ai-assistant',
   imports: [CommonModule, TranslatePipe],

@@ -3,6 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { TranslationService, Language } from '../../services/translation.service';
 
+/**
+ * OptionsDialog
+ *
+ * Configures application-wide settings:
+ * - Board and Piece themes.
+ * - Player types (Human vs Computer).
+ * - Computer ELO levels.
+ * - Language selection.
+ */
 @Component({
   selector: 'app-options-dialog',
   templateUrl: './options-dialog.html',

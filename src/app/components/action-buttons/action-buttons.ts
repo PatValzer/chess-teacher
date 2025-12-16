@@ -10,6 +10,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 })
 export class ActionButtons {
   isMultiplayerMode = input(false);
+  is3dMode = input(false);
 
   resetGame = output<void>();
   undoMove = output<void>();
