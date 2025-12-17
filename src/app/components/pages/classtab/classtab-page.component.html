@@ -1,0 +1,269 @@
+<div class="min-h-screen bg-slate-900 text-slate-200">
+  <!-- Header -->
+  <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a routerLink="/dashboard" class="text-slate-400 hover:text-white transition-colors">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m12 19-7-7 7-7" />
+            <path d="M19 12H5" />
+          </svg>
+        </a>
+        <div>
+          <h1
+            class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500"
+          >
+            ClassTab Viewer
+          </h1>
+          <p class="text-sm text-slate-400">Classical Guitar Tablature</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Offline Indicator -->
+        <div
+          *ngIf="isOffline()"
+          class="flex items-center gap-2 px-3 py-1.5 bg-orange-500/20 text-orange-300 rounded-lg text-sm"
+          title="You are offline"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="1" y1="1" x2="23" y2="23" />
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+            <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+            <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+            <line x1="12" y1="20" x2="12.01" y2="20" />
+          </svg>
+          Offline
+        </div>
+        <!-- Cache Indicator -->
+        <div
+          *ngIf="isFromCache()"
+          class="flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 text-blue-300 rounded-lg text-sm"
+          title="Loaded from cache"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M8 16H3v5" />
+          </svg>
+          Cached
+        </div>
+        <a
+          *ngIf="currentPiece()"
+          [href]="currentPiece()?.url"
+          target="_blank"
+          class="text-sm text-purple-400 hover:text-purple-300 transition-colors"
+        >
+          Open in New Tab ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="h-[calc(100vh-73px)]">
+    <div *ngIf="!currentPiece()" class="flex items-center justify-center h-full">
+      <div class="text-center py-12">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="mx-auto text-slate-600 mb-4"
+        >
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+        </svg>
+        <h3 class="text-xl font-semibold text-slate-400 mb-2">No Tablature Selected</h3>
+        <p class="text-slate-500 mb-6">Search for a piece from the dashboard widget</p>
+        <a
+          routerLink="/dashboard"
+          class="inline-block px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+        >
+          Go to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Piece Info Banner -->
+    <div *ngIf="currentPiece()" class="bg-slate-800 border-b border-slate-700 px-6 py-4">
+      <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-100">{{ currentPiece()?.title }}</h2>
+          <p class="text-sm text-purple-400">{{ currentPiece()?.composer }}</p>
+        </div>
+        <button
+          *ngIf="currentPiece()?.midiUrl"
+          (click)="toggleMidi()"
+          class="px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
+          [class.bg-teal-500]="isPlayingMidi()"
+          [class.hover:bg-teal-600]="isPlayingMidi()"
+          [class.bg-teal-500/20]="!isPlayingMidi()"
+          [class.hover:bg-teal-500/30]="!isPlayingMidi()"
+          [class.text-white]="isPlayingMidi()"
+          [class.text-teal-300]="!isPlayingMidi()"
+        >
+          <svg *ngIf="!isPlayingMidi()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <svg *ngIf="isPlayingMidi()" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16"/>
+            <rect x="14" y="4" width="4" height="16"/>
+          </svg>
+          {{ isPlayingMidi() ? 'Stop MIDI' : 'Play MIDI' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Auto-Scroll Controls -->
+    <div *ngIf="currentPiece()" class="bg-slate-800 border-b border-slate-700 px-6 py-3">
+      <div class="max-w-7xl mx-auto flex items-center justify-center gap-4">
+        <button
+          (click)="decreaseSpeed()"
+          class="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-slate-200"
+          title="Decrease Speed"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+          </svg>
+        </button>
+
+        <button
+          (click)="toggleScroll()"
+          class="px-6 py-2 rounded-lg transition-colors font-medium"
+          [class.bg-purple-500]="isScrolling()"
+          [class.hover:bg-purple-600]="isScrolling()"
+          [class.bg-slate-700]="!isScrolling()"
+          [class.hover:bg-slate-600]="!isScrolling()"
+          [class.text-white]="true"
+        >
+          <span *ngIf="!isScrolling()" class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Play
+          </span>
+          <span *ngIf="isScrolling()" class="flex items-center gap-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <rect x="6" y="4" width="4" height="16" />
+              <rect x="14" y="4" width="4" height="16" />
+            </svg>
+            Pause
+          </span>
+        </button>
+
+        <button
+          (click)="increaseSpeed()"
+          class="p-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-slate-200"
+          title="Increase Speed"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
+        </button>
+
+        <div class="flex items-center gap-2 ml-4">
+          <span class="text-sm text-slate-400">Speed:</span>
+          <span class="text-sm font-mono text-purple-400 min-w-[3ch]">{{ scrollSpeed() }}x</span>
+          <button
+            (click)="resetSpeed()"
+            class="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Iframe Content -->
+    <div
+      *ngIf="currentPiece()"
+      #iframeContainer
+      class="overflow-auto bg-slate-900"
+      style="height: calc(100vh - 136px)"
+    >
+      <div class="flex justify-center">
+        <div class="w-full max-w-5xl bg-white">
+          <iframe
+            #tabIframe
+            [src]="currentPiece()?.url || '' | sanitizeUrl"
+            (load)="onIframeLoad()"
+            class="w-full border-0"
+            scrolling="no"
+            title="ClassTab Tablature"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

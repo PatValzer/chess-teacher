@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
-import { ChessBoard } from './components/chess-board/chess-board';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [ChessBoard],
-  templateUrl: './app.html',
+  standalone: true,
+  imports: [RouterOutlet],
+  template: `<router-outlet></router-outlet>`,
   styleUrl: './app.css',
 })
 export class App {
