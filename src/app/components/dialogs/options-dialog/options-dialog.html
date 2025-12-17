@@ -103,23 +103,24 @@
             class="option-btn"
             [class.active]="selectedLanguage === lang.code"
             (click)="changeLanguage(lang.code)"
+            [title]="lang.name"
           >
-            <span>{{ lang.name }}</span>
+            <span style="font-size: 2.5rem; line-height: 1.2">{{ lang.flag }}</span>
           </button>
           }
         </div>
       </div>
 
       <div class="section">
-        <h3 class="section-title">{{ 'SETTINGS.BOARD_THEME' | translate }}</h3>
+        <h3 class="section-title">{{ 'SETTINGS.APP_THEME' | translate }}</h3>
         <div class="options-grid">
-          @for (theme of boardThemes; track theme.id) {
+          @for (theme of appThemes; track theme.id) {
           <button
             class="option-btn"
-            [class.active]="selectedBoardTheme === theme.id"
-            (click)="selectedBoardTheme = theme.id"
+            [class.active]="selectedAppTheme === theme.id"
+            (click)="selectAppTheme(theme.id)"
           >
-            <div class="preview-board" [class]="'theme-' + theme.id"></div>
+            <div class="preview-theme" [class]="'theme-' + theme.id"></div>
             <span>{{ theme.name | translate }}</span>
           </button>
           }
@@ -135,7 +136,10 @@
             [class.active]="selectedPieceTheme === theme.id"
             (click)="selectedPieceTheme = theme.id"
           >
-            <span>{{ theme.name }}</span>
+            <div class="preview-piece">
+              <img [src]="getPiecePreviewUrl(theme.id)" alt="Knight" />
+            </div>
+            <span class="theme-name">{{ theme.name }}</span>
           </button>
           }
         </div>

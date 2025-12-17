@@ -1,0 +1,13 @@
+body.theme-forest {
+  --app-bg-color: #f0fdf4;
+  --app-background: linear-gradient(135deg, #14532d 0%, #16a34a 100%);
+  --app-text-color: #14532d;
+  --app-border-color: #bbf7d0;
+
+  --dialog-bg: linear-gradient(135deg, #14532d 0%, #166534 100%);
+  --dialog-border: #22c55e;
+
+  --panel-bg: linear-gradient(135deg, #14532d 0%, #166534 100%);
+  --panel-border: #22c55e;
+  --panel-text: #ffffff;
+}

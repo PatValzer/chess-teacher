@@ -1,0 +1,13 @@
+body.theme-ocean {
+  --app-bg-color: #f0f9ff;
+  --app-background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+  --app-text-color: #0c4a6e;
+  --app-border-color: #bae6fd;
+
+  --dialog-bg: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --dialog-border: #38bdf8;
+
+  --panel-bg: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --panel-border: #38bdf8;
+  --panel-text: #ffffff;
+}

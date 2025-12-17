@@ -1,8 +1,8 @@
 import { Component, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { WebRTCService, ConnectionStatus, ConnectionRole } from '../../services/webrtc.service';
+import { WebRTCService, ConnectionStatus, ConnectionRole } from '../../../services/webrtc.service';
 import QRCode from 'qrcode';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 type ConnectionStep =
   | 'choose-role'

@@ -8,10 +8,10 @@ import {
   effect,
   untracked,
 } from '@angular/core';
-import { Stockfish, EngineAnalysis } from '../../services/stockfish';
+import { Stockfish, EngineAnalysis } from '../../../services/stockfish';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 /**
  * AnalysisPanel

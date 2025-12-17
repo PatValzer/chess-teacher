@@ -15,7 +15,7 @@
   min-height: 100vh;
   justify-content: center;
   align-items: stretch;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #bae6fd 100%);
+  background: transparent;
 }
 
 .controls-area {
@@ -57,12 +57,12 @@
 }
 
 .controls-panel {
-  background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
+  background: var(--panel-bg, linear-gradient(135deg, #0c4a6e 0%, #075985 100%));
   backdrop-filter: blur(16px);
   border-radius: 1rem;
   padding: 1.5rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  border: 1px solid var(--panel-border, rgba(6, 182, 212, 0.3));
   grid-area: controls;
   display: flex;
   flex-direction: column;

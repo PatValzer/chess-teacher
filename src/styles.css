@@ -4,16 +4,23 @@
 @import 'chessground/assets/chessground.brown.css';
 @import 'chessground/assets/chessground.cburnett.css';
 
+@import './themes/theme-default.css';
+@import './themes/theme-dark.css';
+@import './themes/theme-ocean.css';
+@import './themes/theme-forest.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Global body background */
 body {
-  background: white;
+  background: var(--app-background, white);
+  color: var(--app-text-color, #1e293b);
   min-height: 100vh;
   margin: 0;
   font-family: 'Outfit', sans-serif;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 /* Custom Scrollbar */

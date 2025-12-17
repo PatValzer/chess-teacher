@@ -7,7 +7,8 @@ export interface AppSettings {
   blackPlayerType: 'human' | 'computer';
   whiteComputerElo: number;
   blackComputerElo: number;
-  language: 'en' | 'it';
+  language: 'en' | 'it' | 'es' | 'fr' | 'de';
+  appTheme: string;
   userLevel?: 'beginner' | 'intermediate' | 'advanced';
 }
 
@@ -19,6 +20,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   whiteComputerElo: 1350,
   blackComputerElo: 1350,
   language: 'en',
+  appTheme: 'default',
 };
 
 @Injectable({
@@ -29,7 +31,23 @@ export class SettingsService {
 
   constructor() {
     effect(() => {
-      this.saveSettings(this.settings());
+      const currentSettings = this.settings();
+      this.saveSettings(currentSettings);
+
+      // Apply app theme
+      const theme = currentSettings.appTheme || 'default';
+      const themeClass = `theme-${theme}`;
+
+      // Remove old theme classes
+      document.body.classList.forEach((cls) => {
+        if (cls.startsWith('theme-') && cls !== themeClass) {
+          document.body.classList.remove(cls);
+        }
+      });
+
+      if (!document.body.classList.contains(themeClass)) {
+        document.body.classList.add(themeClass);
+      }
     });
   }
 

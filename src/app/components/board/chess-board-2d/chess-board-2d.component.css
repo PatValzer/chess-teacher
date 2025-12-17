@@ -1,0 +1,34 @@
+@import 'chessground/assets/chessground.base.css';
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.chessboard {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1;
+}
+
+/* 
+ * Themes and Piece Styles 
+ * These were global in the parent CSS but now we need to ensure they apply here.
+ * Since we used ViewEncapsulation.Emulated (default), styles in this component won't bleed out.
+ * But we need the piece definition styles. 
+ * 
+ * PROPOSAL: Move the heavy piece-theme CSS into a global style file (e.g. `themes.css` or `board-themes.css`) 
+ * validation: The user has `src/themes/` folder.
+ * 
+ * For now, I'll assume the styles are available via global styles (if they were ::ng-deep) or I should copy them.
+ * The original file had ::ng-deep which makes them global.
+ * 
+ * However, since we are moving the board elements INTO this component, we can use local styles without ::ng-deep 
+ * if we copy them here.
+ * 
+ * Better: Leave them in parent for now if using ::ng-deep, or rely on global styles.
+ * The user's `styles.css` is global. 
+ * 
+ * I will strictly copy the .chessboard sizing for now.
+ */

@@ -1,7 +1,7 @@
 import { Component, input, output, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { TranslationService, Language } from '../../services/translation.service';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
+import { TranslationService, Language } from '../../../services/translation.service';
 
 /**
  * OptionsDialog
@@ -23,6 +23,7 @@ export class OptionsDialog {
   visible = input(false);
   currentBoardTheme = input('default');
   currentPieceTheme = input('default');
+  currentAppTheme = input('default');
   whitePlayerType = input<'human' | 'computer'>('human');
   blackPlayerType = input<'human' | 'computer'>('human');
   whiteComputerElo = input<number>(1350);
@@ -33,12 +34,20 @@ export class OptionsDialog {
   settingsChange = output<{
     boardTheme: string;
     pieceTheme: string;
+    appTheme: string;
     whitePlayerType: 'human' | 'computer';
     blackPlayerType: 'human' | 'computer';
     whiteComputerElo: number;
     blackComputerElo: number;
     language: Language;
   }>();
+
+  appThemes = [
+    { id: 'default', name: 'THEME.DEFAULT' },
+    { id: 'dark', name: 'THEME.DARK' },
+    { id: 'ocean', name: 'THEME.OCEAN' },
+    { id: 'forest', name: 'THEME.FOREST' },
+  ];
 
   boardThemes = [
     { id: 'default', name: 'THEME.DEFAULT' },
@@ -57,13 +66,17 @@ export class OptionsDialog {
     { id: 'leipzig', name: 'Leipzig' },
   ];
 
-  languages: { code: Language; name: string }[] = [
-    { code: 'en', name: 'English' },
-    { code: 'it', name: 'Italiano' },
+  languages: { code: Language; name: string; flag: string }[] = [
+    { code: 'en', name: 'English', flag: '🇺🇸' },
+    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
   ];
 
   selectedBoardTheme = 'default';
   selectedPieceTheme = 'default';
+  selectedAppTheme = 'default';
   selectedWhitePlayerType: 'human' | 'computer' = 'human';
   selectedBlackPlayerType: 'human' | 'computer' = 'human';
   selectedWhiteComputerElo: number = 1350;
@@ -74,6 +87,7 @@ export class OptionsDialog {
     effect(() => {
       this.selectedBoardTheme = this.currentBoardTheme();
       this.selectedPieceTheme = this.currentPieceTheme();
+      this.selectedAppTheme = this.currentAppTheme();
       this.selectedWhitePlayerType = this.whitePlayerType();
       this.selectedBlackPlayerType = this.blackPlayerType();
       this.selectedWhiteComputerElo = this.whiteComputerElo();
@@ -88,10 +102,31 @@ export class OptionsDialog {
     this.translationService.setLanguage(lang);
   }
 
+  selectAppTheme(themeId: string) {
+    this.selectedAppTheme = themeId;
+
+    // Automatically select board theme based on app theme
+    switch (themeId) {
+      case 'ocean':
+        this.selectedBoardTheme = 'blue';
+        break;
+      case 'forest':
+        this.selectedBoardTheme = 'green';
+        break;
+      case 'dark':
+        this.selectedBoardTheme = 'wood'; // Or custom dark theme if available
+        break;
+      default:
+        this.selectedBoardTheme = 'default';
+        break;
+    }
+  }
+
   save() {
     this.settingsChange.emit({
       boardTheme: this.selectedBoardTheme,
       pieceTheme: this.selectedPieceTheme,
+      appTheme: this.selectedAppTheme,
       whitePlayerType: this.selectedWhitePlayerType,
       blackPlayerType: this.selectedBlackPlayerType,
       whiteComputerElo: this.selectedWhiteComputerElo,
@@ -104,10 +139,22 @@ export class OptionsDialog {
   cancel() {
     this.selectedBoardTheme = this.currentBoardTheme();
     this.selectedPieceTheme = this.currentPieceTheme();
+    this.selectedAppTheme = this.currentAppTheme();
     // Revert language if changed
     if (this.selectedLanguage !== this.currentLanguage()) {
       this.translationService.setLanguage(this.currentLanguage());
     }
     this.close.emit();
+  }
+  getPiecePreviewUrl(themeId: string): string {
+    const themeMap: Record<string, string> = {
+      default: 'cburnett',
+      merida: 'merida',
+      alpha: 'alpha',
+      cheq: 'cheq',
+      leipzig: 'leipzig',
+    };
+    const theme = themeMap[themeId] || 'cburnett';
+    return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${theme}/wN.svg`;
   }
 }

@@ -103,8 +103,8 @@
 }
 
 .dialog-content {
-  background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%);
-  border: 1px solid rgba(6, 182, 212, 0.3);
+  background: var(--dialog-bg, linear-gradient(135deg, #0c4a6e 0%, #075985 100%));
+  border: 1px solid var(--dialog-border, rgba(6, 182, 212, 0.3));
   border-radius: 1rem;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   width: 90%;
@@ -280,4 +280,49 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+/* App Theme Previews */
+.preview-theme {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 4px;
+}
+
+.preview-theme.theme-default {
+  background: white;
+}
+.preview-theme.theme-dark {
+  background: #0f172a;
+}
+.preview-theme.theme-ocean {
+  background: #f0f9ff;
+}
+.preview-theme.theme-forest {
+  background: #f0fdf4;
+}
+
+/* Piece Previews */
+.preview-piece {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview-piece img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+
+.theme-name {
+  font-size: 0.75rem; /* Smaller font as requested */
+  text-align: center;
+  line-height: 1.2;
 }

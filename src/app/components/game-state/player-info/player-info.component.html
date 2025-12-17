@@ -1,0 +1,17 @@
+<div
+  class="player-info flex flex-col justify-start items-center px-3 py-4 rounded-lg border transition-all duration-300 h-full"
+  [ngClass]="{
+    '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
+    'w-full': isSmallScreen(),
+    'bg-black border-white text-white shadow-md': color() === 'black',
+    'bg-white border-black text-black shadow-md': color() === 'white',
+    'active-turn': isActive()
+  }"
+>
+  <app-captured-pieces
+    [pieces]="capturedPieces()"
+    [color]="color() === 'white' ? 'black' : 'white'"
+    [pieceTheme]="pieceTheme()"
+    [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
+  ></app-captured-pieces>
+</div>

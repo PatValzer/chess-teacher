@@ -12,40 +12,40 @@ import {
   PLATFORM_ID,
   Inject,
 } from '@angular/core';
-import { isPlatformBrowser, NgClass } from '@angular/common';
+import { CommonModule, isPlatformBrowser, NgClass } from '@angular/common';
 import { Chess } from 'chess.js';
-import { Chessground } from 'chessground';
-import { Api as ChessgroundApi } from 'chessground/api';
-import { Color, Key } from 'chessground/types';
-import { AnalysisPanel } from '../analysis-panel/analysis-panel';
+import { Key } from 'chessground/types';
+import { AnalysisPanel } from '../widgets/analysis-panel/analysis-panel';
 import { Stockfish } from '../../services/stockfish';
-import { OptionsDialog } from '../options-dialog/options-dialog';
-import { OpeningExplorer } from '../opening-explorer/opening-explorer';
-import { AiAssistant } from '../ai-assistant/ai-assistant';
-import { ConnectionDialog } from '../connection-dialog/connection-dialog';
+import { OptionsDialog } from '../dialogs/options-dialog/options-dialog';
+import { OpeningExplorer } from '../opening/opening-explorer/opening-explorer';
+import { AiAssistant } from '../widgets/ai-assistant/ai-assistant';
+import { ConnectionDialog } from '../dialogs/connection-dialog/connection-dialog';
 import { WebRTCService, ConnectionRole, ConnectionStatus } from '../../services/webrtc.service';
 import { GameSyncService, MoveData } from '../../services/game-sync.service';
 import { SettingsService, AppSettings } from '../../services/settings.service';
 import { TranslationService } from '../../services/translation.service';
 import { ComputerPlayerService } from '../../services/computer-player.service';
 
-import { ActionButtons } from '../action-buttons/action-buttons';
-import { MoveHistory } from '../move-history/move-history';
-import { MultiplayerStatus } from '../multiplayer-status/multiplayer-status';
-import { CapturedPieces } from '../captured-pieces/captured-pieces';
-import { TranslatePipe } from '../../pipes/translate.pipe';
-import { GameStatus } from '../game-status/game-status';
-import { OpeningGraphComponent } from '../opening-graph/opening-graph.component';
-import { ChessBoard3dComponent } from '../chess-board-3d/chess-board-3d.component';
-import { PromotionDialog } from '../promotion-dialog/promotion-dialog';
+import { ActionButtons } from '../widgets/action-buttons/action-buttons';
+import { GameNavigationComponent } from '../game-state/game-navigation/game-navigation.component';
+import { MoveHistory } from '../game-state/move-history/move-history';
+import { MultiplayerStatus } from '../game-state/multiplayer-status/multiplayer-status';
+import { PlayerInfoComponent } from '../game-state/player-info/player-info.component';
+import { GameStatus } from '../game-state/game-status/game-status';
+import { OpeningGraphComponent } from '../opening/opening-graph/opening-graph.component';
+import { OpeningMapButtonComponent } from '../opening/opening-map-button/opening-map-button.component';
+import { ChessBoard3dComponent } from '../board/chess-board-3d/chess-board-3d.component';
+import { ChessBoard2dComponent } from '../board/chess-board-2d/chess-board-2d.component';
+import { PromotionDialog } from '../dialogs/promotion-dialog/promotion-dialog';
 
 /**
  * ChessBoard
  *
- * The main component responsible for the 2D chess board interface.
- * It integrates:
+ * The main component responsible for the game interface (Game Page).
+ * It orchestrates:
  * - Chess.js for game logic and move validation.
- * - Chessground for the visual board and interaction.
+ * - 2D and 3D board components for visualization.
  * - Stockfish for AI analysis and opponent moves.
  * - WebRTC for multiplayer connectivity.
  * - Various sub-components for history, capture, and analysis.
@@ -53,34 +53,36 @@ import { PromotionDialog } from '../promotion-dialog/promotion-dialog';
 @Component({
   selector: 'app-chess-board',
   imports: [
+    CommonModule,
     AnalysisPanel,
-    OptionsDialog,
     OpeningExplorer,
     AiAssistant,
-    ConnectionDialog,
+    ChessBoard3dComponent,
+    ChessBoard2dComponent,
     ActionButtons,
+    GameNavigationComponent,
     MoveHistory,
     MultiplayerStatus,
-    CapturedPieces,
-    TranslatePipe,
+    PlayerInfoComponent,
     GameStatus,
     OpeningGraphComponent,
-    ChessBoard3dComponent,
+    OpeningMapButtonComponent,
     PromotionDialog,
-    NgClass,
+    OptionsDialog,
+    ConnectionDialog,
   ],
   templateUrl: './chess-board.html',
   styleUrl: './chess-board.css',
 })
 export class ChessBoard implements AfterViewInit, OnDestroy {
-  @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>;
+  // @ViewChild('board', { static: false }) boardElement!: ElementRef<HTMLDivElement>; // Removed
 
   // Responsive state
   isSmallScreen = signal(false);
   private mediaQueryList: MediaQueryList | null = null;
   private mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
 
-  private chessgroundApi!: ChessgroundApi;
+  // private chessgroundApi!: ChessgroundApi; // Removed
   private chess = new Chess();
   protected Math = Math;
 
@@ -92,6 +94,12 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   isStalemate = signal(false);
   moveHistory = signal<string[]>([]);
   openingName = signal('');
+  canUndo = signal(false);
+  canRedo = signal(false);
+
+  // State for child components
+  validMoves = signal<Map<Key, Key[]>>(new Map());
+  lastMove = signal<Key[] | undefined>(undefined);
 
   // Navigation state
   private redoStack: any[] = [];
@@ -120,6 +128,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
   currentBoardTheme = computed(() => this.settings().boardTheme);
   currentPieceTheme = computed(() => this.settings().pieceTheme);
+  currentAppTheme = computed(() => this.settings().appTheme || 'default');
 
   // Player types are human in multiplayer, otherwise from settings
   whitePlayerType = computed(() =>
@@ -134,13 +143,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
   language = computed(() => this.settings().language);
 
-  currentBoardThemeChanged = effect(() => {
-    const newTheme = this.currentBoardTheme();
-    if (this.chessgroundApi) {
-      this.chessgroundApi.setShapes;
-      this.chessgroundApi.redrawAll();
-    }
-  });
+  // Note: currentBoardThemeChanged effect removed as child handles it via input
 
   getPieceUrl(piece: string, color: 'white' | 'black'): string {
     const themeMap: Record<string, string> = {
@@ -189,22 +192,14 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   onPromotionCancelled() {
     this.showPromotionDialog.set(false);
     this.pendingPromotionMove = null;
-    this.chessgroundApi.set({ fen: this.chess.fen() });
+    // Revert board state on child by forcing signal update
+    this.fen.set(this.chess.fen());
   }
 
   is3dMode = signal(false);
 
   toggle3dMode() {
     this.is3dMode.update((v) => !v);
-
-    // If switching back to 2D, we might need to ensure board is redrawn or state is correct
-    if (!this.is3dMode()) {
-      setTimeout(() => {
-        if (this.boardElement) {
-          this.initializeBoard();
-        }
-      }, 50);
-    }
   }
 
   on3dMove(move: { from: string; to: string }) {
@@ -264,7 +259,9 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.initializeBoard();
+    // Initialization handled by child component via signals
+    // Need to set initial valid moves
+    this.updateGameState();
   }
 
   toggleOptions() {
@@ -279,50 +276,13 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.settingsService.updateSettings(newSettings);
     // console.log('Settings updated:', newSettings); // Optional logging
 
-    this.applyNewConfig();
+    // this.applyNewConfig(); // Handled by child
     this.checkAiMove();
   }
 
-  private applyNewConfig() {
-    this.chessgroundApi.set({
-      drawable: { visible: true },
-    });
-    // Forcing a redraw/reconfig for themes usually involves CSS class changes on the container
-    // or specific config for pieces if using custom images.
-    // We will handle the board class in the template/host binding or a specific method,
-    // and pieces via updating the piece set configuration if we were using custom URLs.
-    // Actually, chessground manages pieces via CSS classes or URLs.
+  // private applyNewConfig() { ... } // Removed
 
-    // Let's implement the piece theme logic by updating the global config if possible,
-    // or by changing the container class that we will use in CSS to target pieces.
-    // Actually, standard Chessground (and how Lichess does it) usually works by applying
-    // a class to the board container for the piece set (e.g., 'merida', 'cburnett').
-
-    // So we'll update the board element's class list for standard pieces.
-    // For custom pieces we might need more, but let's stick to CSS classes for now.
-  }
-
-  private initializeBoard() {
-    this.chessgroundApi = Chessground(this.boardElement.nativeElement, {
-      fen: this.chess.fen(),
-      orientation: 'white',
-      movable: {
-        free: false,
-        color: 'white',
-        dests: this.getValidMoves(),
-        events: {
-          after: (orig, dest) => this.onMove(orig, dest),
-        },
-      },
-      draggable: {
-        showGhost: true,
-      },
-      highlight: {
-        lastMove: true,
-        check: true,
-      },
-    });
-  }
+  // private initializeBoard() { ... } // Removed
 
   private getValidMoves(): Map<Key, Key[]> {
     const dests = new Map<Key, Key[]>();
@@ -341,13 +301,12 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     return dests;
   }
 
-  private onMove(orig: Key, dest: Key) {
+  onMove(orig: Key, dest: Key) {
     // In multiplayer mode, check if it's this player's turn
     if (this.isMultiplayerMode() && !this.isMyTurn()) {
       console.warn('Not your turn!');
-      this.chessgroundApi.set({
-        fen: this.chess.fen(),
-      });
+      // Force update to reset child board
+      this.fen.set(this.chess.fen());
       return;
     }
 
@@ -375,14 +334,8 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
 
       if (move) {
         this.updateGameState();
-        this.chessgroundApi.set({
-          fen: this.chess.fen(),
-          turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
-          movable: {
-            color: this.chess.turn() === 'w' ? 'white' : 'black',
-            dests: this.getValidMoves(),
-          },
-        });
+
+        // Child component reacts to fen change.
 
         // Send move to peer if in multiplayer mode
         if (this.isMultiplayerMode() && this.connectionStatus() === 'connected') {
@@ -396,9 +349,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       }
     } catch (e) {
       // Invalid move, reset the board
-      this.chessgroundApi.set({
-        fen: this.chess.fen(),
-      });
+      this.fen.set(this.chess.fen());
     }
   }
 
@@ -410,13 +361,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     const isComputerTurn =
       (isWhiteTurn && this.whitePlayerType() === 'computer') ||
       (!isWhiteTurn && this.blackPlayerType() === 'computer');
-
-    console.log('Checking AI move:', {
-      isWhiteTurn,
-      isComputerTurn,
-      whiteType: this.whitePlayerType(),
-      blackType: this.blackPlayerType(),
-    });
 
     if (isComputerTurn && !this.chess.isGameOver()) {
       const elo = isWhiteTurn ? this.whiteComputerElo() : this.blackComputerElo();
@@ -446,6 +390,18 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.isCheckmate.set(this.chess.isCheckmate());
     this.isStalemate.set(this.chess.isStalemate());
 
+    // Update valid moves for the child
+    this.validMoves.set(this.getValidMoves());
+
+    // Update last move
+    const verboseHistory = this.chess.history({ verbose: true });
+    if (verboseHistory.length > 0) {
+      const last = verboseHistory[verboseHistory.length - 1];
+      this.lastMove.set([last.from as Key, last.to as Key]);
+    } else {
+      this.lastMove.set(undefined);
+    }
+
     // Combine history: current history + reversed redo stack
     const futureMoves = [...this.redoStack].reverse().map((m) => m.san);
     this.moveHistory.set([...this.chess.history(), ...futureMoves]);
@@ -474,6 +430,9 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     this.capturedByWhite.set(whiteCaptures);
     this.capturedByBlack.set(blackCaptures);
 
+    this.canUndo.set(this.chess.history().length > 0);
+    this.canRedo.set(this.redoStack.length > 0);
+
     // Trigger Stockfish analysis
     this.stockfish.analyzePosition(this.chess.fen());
 
@@ -484,14 +443,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
   resetGame() {
     this.chess.reset();
     this.redoStack = [];
-    this.chessgroundApi.set({
-      fen: this.chess.fen(),
-      turnColor: 'white',
-      movable: {
-        color: 'white',
-        dests: this.getValidMoves(),
-      },
-    });
     this.updateGameState();
   }
 
@@ -503,7 +454,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     const move = this.chess.undo();
     if (move) {
       this.redoStack.push(move);
-      this.updateBoardState();
       this.updateGameState();
     }
   }
@@ -512,7 +462,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
     const move = this.redoStack.pop();
     if (move) {
       this.chess.move(move);
-      this.updateBoardState();
       this.updateGameState();
     }
   }
@@ -522,7 +471,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       const move = this.chess.undo();
       if (move) this.redoStack.push(move);
     }
-    this.updateBoardState();
     this.updateGameState();
   }
 
@@ -531,7 +479,6 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       const move = this.redoStack.pop();
       if (move) this.chess.move(move);
     }
-    this.updateBoardState();
     this.updateGameState();
   }
 
@@ -557,32 +504,15 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       }
     }
 
-    this.updateBoardState();
     this.updateGameState();
   }
 
-  private updateBoardState() {
-    this.chessgroundApi.set({
-      fen: this.chess.fen(),
-      turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
-      movable: {
-        color: this.chess.turn() === 'w' ? 'white' : 'black',
-        dests: this.getValidMoves(),
-      },
-      lastMove:
-        this.chess.history({ verbose: true }).length > 0
-          ? [
-              this.chess.history({ verbose: true }).pop()!.from,
-              this.chess.history({ verbose: true }).pop()!.to,
-            ]
-          : undefined,
-    });
-  }
+  // private updateBoardState() { ... } // Removed or integrated into updateGameState
 
   orientation = signal<'white' | 'black'>('white');
 
   flipBoard() {
-    this.chessgroundApi.toggleOrientation();
+    // this.chessgroundApi.toggleOrientation(); // Removed
     this.orientation.update((o) => (o === 'white' ? 'black' : 'white'));
   }
 
@@ -621,7 +551,7 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       }
 
       if (result) {
-        this.chessgroundApi.move(result.from, result.to);
+        // this.chessgroundApi.move(result.from, result.to); // Removed
         this.updateGameState();
       } else {
         console.warn('Could not make suggested move:', move);
@@ -673,25 +603,14 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       });
 
       if (move) {
-        // Update the visual board
-        this.chessgroundApi.set({
-          fen: this.chess.fen(),
-          turnColor: this.chess.turn() === 'w' ? 'white' : 'black',
-          movable: {
-            color: this.chess.turn() === 'w' ? 'white' : 'black',
-            dests: this.getValidMoves(),
-          },
-        });
-
+        // Visual board update handled by reactive state (fen, etc)
         this.updateGameState();
         this.isMyTurn.set(true); // Now it's our turn
       } else {
         console.error('Failed to apply remote move');
         // Sync game state
         this.chess.load(moveData.fen);
-        this.chessgroundApi.set({
-          fen: moveData.fen,
-        });
+        // this.chessgroundApi.set({ ... }); // Removed
         this.updateGameState();
       }
     } catch (error) {

@@ -1,0 +1,36 @@
+<div
+  class="navigation-controls grid grid-cols-4 gap-2 my-2 p-2 bg-slate-700/30 rounded-lg border border-slate-600/30 w-full col-span-3 colspan--3"
+>
+  <button
+    class="btn btn-secondary !px-4 !py-2"
+    (click)="first.emit()"
+    [title]="'GAME.NAV_START' | translate"
+    [disabled]="!canUndo()"
+  >
+    <span class="material-icons btn-icon text-lg">first_page</span>
+  </button>
+  <button
+    class="btn btn-secondary !px-4 !py-2"
+    (click)="previous.emit()"
+    [title]="'GAME.NAV_PREV' | translate"
+    [disabled]="!canUndo()"
+  >
+    <span class="material-icons btn-icon text-lg">chevron_left</span>
+  </button>
+  <button
+    class="btn btn-secondary !px-4 !py-2"
+    (click)="next.emit()"
+    [title]="'GAME.NAV_NEXT' | translate"
+    [disabled]="!canRedo()"
+  >
+    <span class="material-icons btn-icon text-lg">chevron_right</span>
+  </button>
+  <button
+    class="btn btn-secondary !px-4 !py-2"
+    (click)="last.emit()"
+    [title]="'GAME.NAV_END' | translate"
+    [disabled]="!canRedo()"
+  >
+    <span class="material-icons btn-icon text-lg">last_page</span>
+  </button>
+</div>

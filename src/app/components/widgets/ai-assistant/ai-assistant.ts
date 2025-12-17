@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, signal, effect, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Stockfish, EngineAnalysis } from '../../services/stockfish';
-import { OpenRouterService, AiFeedback } from '../../services/open-router';
-import { SettingsService } from '../../services/settings.service';
+import { Stockfish, EngineAnalysis } from '../../../services/stockfish';
+import { OpenRouterService, AiFeedback } from '../../../services/open-router';
+import { SettingsService } from '../../../services/settings.service';
 import { Subscription } from 'rxjs';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 /**
  * AiAssistant

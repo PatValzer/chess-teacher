@@ -1,7 +1,9 @@
 <div class="chess-container">
   <!-- Game Controls -->
   <div class="controls-panel controls-area">
-    <h2 class="text-2xl font-semibold mb-4 text-white">Chess Teacher</h2>
+    <h2 class="text-2xl font-semibold mb-4 text-white" style="color: var(--panel-text, white)">
+      Chess Teacher
+    </h2>
 
     <!-- Game Status -->
     @if (isCheck() || isCheckmate() || isStalemate()) {
@@ -42,10 +44,8 @@
   <div class="side-panel">
     <app-analysis-panel [fen]="fen()"></app-analysis-panel>
 
-    <button (click)="toggleOpeningGraph()" class="btn btn-multiplayer w-full mb-4 justify-center">
-      <span class="material-icons">map</span>
-      Opening Map
-    </button>
+    <app-opening-map-button (clicked)="toggleOpeningGraph()"></app-opening-map-button>
+
     <app-opening-explorer
       [fen]="fen()"
       (moveSelected)="onOpeningMove($event)"
@@ -57,45 +57,21 @@
   <!-- Chess Board -->
   <div class="board-wrapper board-area">
     <div
-      class="flex items-stretch justify-center gap-4 w-full"
+      class="gap-4 w-full"
+      [class.flex]="isSmallScreen()"
       [class.flex-col]="isSmallScreen()"
-      [class.flex-row]="!isSmallScreen()"
+      [class.grid]="!isSmallScreen()"
+      [class.grid-cols-[auto_1fr_auto]]="!isSmallScreen()"
+      [class.justify-center]="!isSmallScreen()"
     >
       <!-- Left Player Info (Opponent) -->
-      <div
-        class="player-info side flex flex-col justify-start items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
-        [ngClass]="{
-          '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
-          'w-full': isSmallScreen()
-        }"
-        [class]="
-          orientation() === 'white'
-            ? 'bg-black border-white text-white shadow-md'
-            : 'bg-white border-black text-black shadow-md'
-        "
-        [class.active-turn]="
-          (orientation() === 'white' && turn() === 'black') ||
-          (orientation() === 'black' && turn() === 'white')
-        "
-      >
-        @if (orientation() === 'white') {
-        <!-- Opponent is Black -->
-        <app-captured-pieces
-          [pieces]="capturedByBlack()"
-          color="white"
-          [pieceTheme]="currentPieceTheme()"
-          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
-        ></app-captured-pieces>
-        } @else {
-        <!-- Opponent is White -->
-        <app-captured-pieces
-          [pieces]="capturedByWhite()"
-          color="black"
-          [pieceTheme]="currentPieceTheme()"
-          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
-        ></app-captured-pieces>
-        }
-      </div>
+      <app-player-info
+        [color]="orientation() === 'white' ? 'black' : 'white'"
+        [isActive]="turn() !== orientation()"
+        [capturedPieces]="orientation() === 'white' ? capturedByBlack() : capturedByWhite()"
+        [pieceTheme]="currentPieceTheme()"
+        [isSmallScreen]="isSmallScreen()"
+      ></app-player-info>
 
       <div class="flex flex-col items-center gap-2 shrink-0">
         <div class="board-header">
@@ -113,82 +89,41 @@
           class="chessboard-3d"
         ></app-chess-board-3d>
         } @else {
-        <div
-          #board
-          class="chessboard theme-{{ currentBoardTheme() }} pieces-{{ currentPieceTheme() }}"
-        ></div>
+        <app-chess-board-2d
+          [fen]="fen()"
+          [orientation]="orientation()"
+          [turnColor]="turn()"
+          [validMoves]="validMoves()"
+          [lastMove]="lastMove()"
+          [isCheck]="isCheck()"
+          [boardTheme]="currentBoardTheme()"
+          [pieceTheme]="currentPieceTheme()"
+          (move)="onMove($event.from, $event.to)"
+          class="chessboard"
+        ></app-chess-board-2d>
+
         }
       </div>
 
       <!-- Right Player Info (Self) -->
-      <div
-        class="player-info side flex flex-col justify-start items-center px-3 py-4 rounded-lg border transition-all duration-300 self-stretch"
-        [ngClass]="{
-          '!w-auto !max-w-none min-w-[3.5rem]': !isSmallScreen(),
-          'w-full': isSmallScreen()
-        }"
-        [class]="
-          orientation() === 'white'
-            ? 'bg-white border-black text-black shadow-md'
-            : 'bg-black border-white text-white shadow-md'
-        "
-        [class.active-turn]="
-          (orientation() === 'white' && turn() === 'white') ||
-          (orientation() === 'black' && turn() === 'black')
-        "
-      >
-        @if (orientation() === 'white') {
-        <!-- Self is White -->
-        <app-captured-pieces
-          [pieces]="capturedByWhite()"
-          color="black"
-          [pieceTheme]="currentPieceTheme()"
-          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
-        ></app-captured-pieces>
-        } @else {
-        <!-- Self is Black -->
-        <app-captured-pieces
-          [pieces]="capturedByBlack()"
-          color="white"
-          [pieceTheme]="currentPieceTheme()"
-          [orientation]="isSmallScreen() ? 'horizontal' : 'vertical'"
-        ></app-captured-pieces>
-        }
-      </div>
-    </div>
+      <app-player-info
+        [color]="orientation()"
+        [isActive]="turn() === orientation()"
+        [capturedPieces]="orientation() === 'white' ? capturedByWhite() : capturedByBlack()"
+        [pieceTheme]="currentPieceTheme()"
+        [isSmallScreen]="isSmallScreen()"
+      ></app-player-info>
 
-    <!-- Game Navigation -->
-    <div
-      class="navigation-controls flex justify-center gap-2 my-2 p-2 bg-slate-700/30 rounded-lg border border-slate-600/30 w-full max-w-[600px] mx-auto"
-    >
-      <button
-        class="btn btn-secondary !px-4 !py-2"
-        (click)="goToStart()"
-        [title]="'GAME.NAV_START' | translate"
-      >
-        <span class="material-icons btn-icon text-lg">first_page</span>
-      </button>
-      <button
-        class="btn btn-secondary !px-4 !py-2"
-        (click)="stepBack()"
-        [title]="'GAME.NAV_PREV' | translate"
-      >
-        <span class="material-icons btn-icon text-lg">chevron_left</span>
-      </button>
-      <button
-        class="btn btn-secondary !px-4 !py-2"
-        (click)="stepForward()"
-        [title]="'GAME.NAV_NEXT' | translate"
-      >
-        <span class="material-icons btn-icon text-lg">chevron_right</span>
-      </button>
-      <button
-        class="btn btn-secondary !px-4 !py-2"
-        (click)="goToEnd()"
-        [title]="'GAME.NAV_END' | translate"
-      >
-        <span class="material-icons btn-icon text-lg">last_page</span>
-      </button>
+      <!-- Game Navigation -->
+      <app-game-navigation
+        class="col-span-3 w-full"
+        [canUndo]="canUndo()"
+        [canRedo]="canRedo()"
+        (first)="goToStart()"
+        (previous)="stepBack()"
+        (next)="stepForward()"
+        (last)="goToEnd()"
+      ></app-game-navigation>
     </div>
 
     <app-ai-assistant
@@ -201,6 +136,7 @@
     [visible]="showOptions()"
     [currentBoardTheme]="currentBoardTheme()"
     [currentPieceTheme]="currentPieceTheme()"
+    [currentAppTheme]="currentAppTheme()"
     [whitePlayerType]="whitePlayerType()"
     [blackPlayerType]="blackPlayerType()"
     [whiteComputerElo]="whiteComputerElo()"

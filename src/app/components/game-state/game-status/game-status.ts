@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-game-status',

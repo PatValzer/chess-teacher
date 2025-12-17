@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { OpeningService, OpeningResponse, OpeningMove } from '../../services/opening';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { OpeningService, OpeningResponse, OpeningMove } from '../../../services/opening';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 /**
  * OpeningExplorer

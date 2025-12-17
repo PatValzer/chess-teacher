@@ -4,6 +4,8 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
+import { TranslationService, Language } from './translation.service';
+
 export interface AiFeedback {
   feedback: string;
   suggestedMove?: string; // e.g., "e2e4" or "Nf3"
@@ -23,12 +25,30 @@ export class OpenRouterService {
     scoreChange: number,
     isWhiteTurn: boolean,
     bestMove?: string,
-    language: 'en' | 'it' = 'en',
+    language: Language = 'en',
     userLevel: string = 'beginner'
   ): Observable<AiFeedback> {
     const currentTurn = isWhiteTurn ? 'White' : 'Black';
     const previousMover = isWhiteTurn ? 'Black' : 'White';
-    const langName = language === 'it' ? 'Italian' : 'English';
+
+    let langName = 'English';
+    switch (language) {
+      case 'it':
+        langName = 'Italian';
+        break;
+      case 'es':
+        langName = 'Spanish';
+        break;
+      case 'fr':
+        langName = 'French';
+        break;
+      case 'de':
+        langName = 'German';
+        break;
+      default:
+        langName = 'English';
+        break;
+    }
 
     const prompt = `
 You are a friendly and instructive chess teacher guiding a ${userLevel} student.
