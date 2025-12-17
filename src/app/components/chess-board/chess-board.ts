@@ -150,8 +150,11 @@ export class ChessBoard implements AfterViewInit, OnDestroy {
       default: 'cburnett',
       merida: 'merida',
       alpha: 'alpha',
-      cheq: 'cheq',
+      maestro: 'maestro',
       leipzig: 'leipzig',
+      fantasy: 'fantasy',
+      spatial: 'spatial',
+      celtic: 'celtic',
       // Add others if they exist in options
     };
 

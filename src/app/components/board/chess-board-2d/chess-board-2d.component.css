@@ -12,23 +12,320 @@
   aspect-ratio: 1;
 }
 
-/* 
- * Themes and Piece Styles 
- * These were global in the parent CSS but now we need to ensure they apply here.
- * Since we used ViewEncapsulation.Emulated (default), styles in this component won't bleed out.
- * But we need the piece definition styles. 
- * 
- * PROPOSAL: Move the heavy piece-theme CSS into a global style file (e.g. `themes.css` or `board-themes.css`) 
- * validation: The user has `src/themes/` folder.
- * 
- * For now, I'll assume the styles are available via global styles (if they were ::ng-deep) or I should copy them.
- * The original file had ::ng-deep which makes them global.
- * 
- * However, since we are moving the board elements INTO this component, we can use local styles without ::ng-deep 
- * if we copy them here.
- * 
- * Better: Leave them in parent for now if using ::ng-deep, or rely on global styles.
- * The user's `styles.css` is global. 
- * 
- * I will strictly copy the .chessboard sizing for now.
- */
+/* Base Board Style */
+::ng-deep .cg-wrap cg-board {
+  background-image: url('../../../../assets/board.svg');
+  background-size: cover;
+}
+
+/* Board Themes */
+.chessboard.theme-default ::ng-deep cg-board {
+  /* Brown - Standard */
+  --board-light: #f0d9b5;
+  --board-dark: #b58863;
+}
+
+.chessboard.theme-green ::ng-deep cg-board {
+  /* Green */
+  --board-light: #eeeed2;
+  --board-dark: #769656;
+}
+
+.chessboard.theme-blue ::ng-deep cg-board {
+  /* Blue */
+  --board-light: #eae9d2;
+  --board-dark: #4b7399;
+}
+
+.chessboard.theme-purple ::ng-deep cg-board {
+  /* Purple */
+  --board-light: #e0c0f0;
+  --board-dark: #712b8f;
+}
+
+.chessboard.theme-wood ::ng-deep cg-board {
+  --board-light: #e8c49e;
+  --board-dark: #8b5a2b;
+  background-image: url('../../../../assets/wood.svg') !important;
+}
+
+.chessboard.theme-marble ::ng-deep cg-board {
+  --board-light: #e8e8e8;
+  --board-dark: #2c2c2c;
+  background-image: url('../../../../assets/marble.svg') !important;
+}
+
+/* Piece Sets */
+
+/* Merida */
+.chessboard.pieces-merida ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wP.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wN.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wB.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wR.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wQ.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/wK.svg') !important;
+}
+
+.chessboard.pieces-merida ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bP.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bN.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bB.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bR.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bQ.svg') !important;
+}
+.chessboard.pieces-merida ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/merida/bK.svg') !important;
+}
+
+/* ALPHA */
+.chessboard.pieces-alpha ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wP.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wN.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wB.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wR.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wQ.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/wK.svg') !important;
+}
+
+.chessboard.pieces-alpha ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bP.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bN.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bB.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bR.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bQ.svg') !important;
+}
+.chessboard.pieces-alpha ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/alpha/bK.svg') !important;
+}
+
+/* MAESTRO */
+.chessboard.pieces-maestro ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wP.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wN.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wB.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wR.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wQ.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/wK.svg') !important;
+}
+
+.chessboard.pieces-maestro ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bP.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bN.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bB.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bR.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bQ.svg') !important;
+}
+.chessboard.pieces-maestro ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/maestro/bK.svg') !important;
+}
+
+/* LEIPZIG */
+.chessboard.pieces-leipzig ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wP.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wN.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wB.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wR.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wQ.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/wK.svg') !important;
+}
+
+.chessboard.pieces-leipzig ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bP.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bN.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bB.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bR.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bQ.svg') !important;
+}
+.chessboard.pieces-leipzig ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/leipzig/bK.svg') !important;
+}
+
+/* FANTASY */
+.chessboard.pieces-fantasy ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wP.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wN.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wB.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wR.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wQ.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/wK.svg') !important;
+}
+
+.chessboard.pieces-fantasy ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bP.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bN.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bB.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bR.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bQ.svg') !important;
+}
+.chessboard.pieces-fantasy ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/fantasy/bK.svg') !important;
+}
+
+/* SPATIAL */
+.chessboard.pieces-spatial ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wP.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wN.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wB.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wR.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wQ.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/wK.svg') !important;
+}
+
+.chessboard.pieces-spatial ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bP.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bN.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bB.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bR.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bQ.svg') !important;
+}
+.chessboard.pieces-spatial ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/spatial/bK.svg') !important;
+}
+
+/* CELTIC */
+.chessboard.pieces-celtic ::ng-deep piece.pawn.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wP.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.knight.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wN.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.bishop.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wB.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.rook.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wR.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.queen.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wQ.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.king.white {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/wK.svg') !important;
+}
+
+.chessboard.pieces-celtic ::ng-deep piece.pawn.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bP.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.knight.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bN.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.bishop.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bB.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.rook.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bR.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.queen.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bQ.svg') !important;
+}
+.chessboard.pieces-celtic ::ng-deep piece.king.black {
+  background-image: url('https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/celtic/bK.svg') !important;
+}

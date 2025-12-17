@@ -8,6 +8,7 @@
 @import './themes/theme-dark.css';
 @import './themes/theme-ocean.css';
 @import './themes/theme-forest.css';
+@import './themes/theme-wood.css';
 
 @tailwind base;
 @tailwind components;
@@ -47,8 +48,7 @@ body {
 .btn {
   @apply relative inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all duration-300 overflow-hidden;
   font-size: 0.875rem; /* 14px */
-  letter-spacing: 0.05em; /* Tracking wider */
-  text-transform: uppercase;
+  text-transform: none;
   /* Default elevation */
   @apply shadow-md hover:shadow-lg active:shadow-sm;
   /* Lift effect */

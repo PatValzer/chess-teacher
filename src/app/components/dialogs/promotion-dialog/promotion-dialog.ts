@@ -21,8 +21,11 @@ export class PromotionDialog {
       default: 'cburnett',
       merida: 'merida',
       alpha: 'alpha',
-      cheq: 'cheq',
+      maestro: 'maestro',
       leipzig: 'leipzig',
+      fantasy: 'fantasy',
+      spatial: 'spatial',
+      celtic: 'celtic',
     };
 
     const selectedTheme = themeMap[this.pieceTheme()] || 'cburnett';

@@ -9,6 +9,7 @@ import {
 
 import { MiniBoardComponent } from '../../board/mini-board/mini-board.component';
 import { OpeningPopoverComponent } from '../opening-popover/opening-popover.component';
+import { TranslatePipe } from '../../../pipes/translate.pipe';
 
 interface GraphNode {
   id: string;
@@ -24,7 +25,7 @@ interface GraphNode {
 @Component({
   selector: 'app-opening-graph',
   standalone: true,
-  imports: [CommonModule, MiniBoardComponent, OpeningPopoverComponent],
+  imports: [CommonModule, MiniBoardComponent, OpeningPopoverComponent, TranslatePipe],
   templateUrl: './opening-graph.html',
   styleUrls: ['./opening-graph.css'],
 })
@@ -136,6 +137,10 @@ export class OpeningGraphComponent {
 
   onClose() {
     this.close.emit();
+  }
+
+  translateKey(prefix: string, id: string, suffix: string): string {
+    return `${prefix}.${id.replace(/-/g, '_').toUpperCase()}.${suffix}`;
   }
 
   // Navigation controls for mini board

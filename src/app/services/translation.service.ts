@@ -104,6 +104,28 @@ export class TranslationService {
       'OPENING.DRAWS': 'Draws',
       'OPENING.BLACK_WINS': 'Black Wins',
 
+      'OPENING_MAP.TITLE': 'Opening Explorer',
+      'OPENING_MAP.SUBTITLE': 'Navigate the tree of chess knowledge',
+      'OPENING_MAP.TOP_LEVEL': 'Top Level',
+      'OPENING_MAP.VARIATIONS': 'Variations',
+      'OPENING_MAP.END_OF_LINE': 'End of line. No further variations recorded.',
+      'OPENING_MAP.VIEW_FULL': 'View Full Analysis',
+      'OPENING_MAP.OVERVIEW': 'Overview',
+      'OPENING_MAP.GOOD_FOR': 'Good For',
+      'OPENING_MAP.RISKS': 'Risks',
+      'OPENING_MAP.VARS': 'Vars',
+
+      'OPENING.CAT.OPEN_GAMES.NAME': 'Open Games (1. e4 e5)',
+      'OPENING.CAT.OPEN_GAMES.DESC': "Classic chess openings starting with the King's Pawn.",
+      'OPENING.CAT.SEMI_OPEN_GAMES.NAME': 'Semi-Open Games',
+      'OPENING.CAT.SEMI_OPEN_GAMES.DESC': 'Asymmetric responses to 1. e4.',
+      'OPENING.CAT.CLOSED_GAMES.NAME': "Queen's Pawn Games",
+      'OPENING.CAT.CLOSED_GAMES.DESC': 'Positional and strategic games (1. d4).',
+      'OPENING.CAT.INDIAN_DEFENSES.NAME': 'Indian Defenses',
+      'OPENING.CAT.INDIAN_DEFENSES.DESC': "Black's hypermodern responses to 1. d4.",
+      'OPENING.CAT.FLANK_OPENINGS.NAME': 'Flank Openings',
+      'OPENING.CAT.FLANK_OPENINGS.DESC': 'Openings not starting with e4 or d4.',
+
       'ANALYSIS.TITLE': 'Engine Analysis',
       'ANALYSIS.DEPTH': 'Depth:',
       'ANALYSIS.BEST_MOVE': 'Best Move:',
@@ -216,6 +238,28 @@ export class TranslationService {
       'OPENING.WHITE_WINS': 'Vittorie Bianco',
       'OPENING.DRAWS': 'Patte',
       'OPENING.BLACK_WINS': 'Vittorie Nero',
+
+      'OPENING_MAP.TITLE': 'Esploratore Aperture',
+      'OPENING_MAP.SUBTITLE': "Naviga l'albero della conoscenza scacchistica",
+      'OPENING_MAP.TOP_LEVEL': 'Livello Superiore',
+      'OPENING_MAP.VARIATIONS': 'Variazioni',
+      'OPENING_MAP.END_OF_LINE': 'Fine della linea. Nessuna altra variazione registrata.',
+      'OPENING_MAP.VIEW_FULL': 'Vedi Analisi Completa',
+      'OPENING_MAP.OVERVIEW': 'Panoramica',
+      'OPENING_MAP.GOOD_FOR': 'Buono Per',
+      'OPENING_MAP.RISKS': 'Rischi',
+      'OPENING_MAP.VARS': 'Var',
+
+      'OPENING.CAT.OPEN_GAMES.NAME': 'Partite Aperte (1. e4 e5)',
+      'OPENING.CAT.OPEN_GAMES.DESC': 'Aperture classiche che iniziano con il Pedone di Re.',
+      'OPENING.CAT.SEMI_OPEN_GAMES.NAME': 'Partite Semi-Aperte',
+      'OPENING.CAT.SEMI_OPEN_GAMES.DESC': 'Risposte asimmetriche a 1. e4.',
+      'OPENING.CAT.CLOSED_GAMES.NAME': 'Partite di Donna',
+      'OPENING.CAT.CLOSED_GAMES.DESC': 'Partite posizionali e strategiche (1. d4).',
+      'OPENING.CAT.INDIAN_DEFENSES.NAME': 'Difese Indiane',
+      'OPENING.CAT.INDIAN_DEFENSES.DESC': 'Risposte ipermoderne del Nero a 1. d4.',
+      'OPENING.CAT.FLANK_OPENINGS.NAME': 'Aperture di Fianco',
+      'OPENING.CAT.FLANK_OPENINGS.DESC': 'Aperture che non iniziano con e4 o d4.',
 
       'ANALYSIS.TITLE': 'Analisi Motore',
       'ANALYSIS.DEPTH': 'Profondità:',
@@ -330,6 +374,28 @@ export class TranslationService {
       'OPENING.DRAWS': 'Tablas',
       'OPENING.BLACK_WINS': 'Victorias Negras',
 
+      'OPENING_MAP.TITLE': 'Explorador de Aperturas',
+      'OPENING_MAP.SUBTITLE': 'Navega por el árbol del conocimiento ajedrecístico',
+      'OPENING_MAP.TOP_LEVEL': 'Nivel Superior',
+      'OPENING_MAP.VARIATIONS': 'Variantes',
+      'OPENING_MAP.END_OF_LINE': 'Fin de la línea. No hay más variantes registradas.',
+      'OPENING_MAP.VIEW_FULL': 'Ver Análisis Completo',
+      'OPENING_MAP.OVERVIEW': 'Resumen',
+      'OPENING_MAP.GOOD_FOR': 'Bueno Para',
+      'OPENING_MAP.RISKS': 'Riesgos',
+      'OPENING_MAP.VARS': 'Vars',
+
+      'OPENING.CAT.OPEN_GAMES.NAME': 'Juegos Abiertos (1. e4 e5)',
+      'OPENING.CAT.OPEN_GAMES.DESC': 'Aperturas clásicas empezando con el Peón de Rey.',
+      'OPENING.CAT.SEMI_OPEN_GAMES.NAME': 'Juegos Semi-Abiertos',
+      'OPENING.CAT.SEMI_OPEN_GAMES.DESC': 'Respuestas asimétricas a 1. e4.',
+      'OPENING.CAT.CLOSED_GAMES.NAME': 'Juegos de Peón de Dama',
+      'OPENING.CAT.CLOSED_GAMES.DESC': 'Juegos posicionales y estratégicos (1. d4).',
+      'OPENING.CAT.INDIAN_DEFENSES.NAME': 'Defensas Indias',
+      'OPENING.CAT.INDIAN_DEFENSES.DESC': 'Respuestas hipermodernas de las Negras a 1. d4.',
+      'OPENING.CAT.FLANK_OPENINGS.NAME': 'Aperturas de Flanco',
+      'OPENING.CAT.FLANK_OPENINGS.DESC': 'Aperturas que no empiezan con e4 o d4.',
+
       'ANALYSIS.TITLE': 'Análisis del Motor',
       'ANALYSIS.DEPTH': 'Profundidad:',
       'ANALYSIS.BEST_MOVE': 'Mejor Jugada:',
@@ -442,6 +508,28 @@ export class TranslationService {
       'OPENING.WHITE_WINS': 'Blancs gagnent',
       'OPENING.DRAWS': 'Nulles',
       'OPENING.BLACK_WINS': 'Noirs gagnent',
+
+      'OPENING_MAP.TITLE': "Explorateur d'Ouvertures",
+      'OPENING_MAP.SUBTITLE': "Naviguez dans l'arbre des connaissances échiquéennes",
+      'OPENING_MAP.TOP_LEVEL': 'Niveau Supérieur',
+      'OPENING_MAP.VARIATIONS': 'Variantes',
+      'OPENING_MAP.END_OF_LINE': 'Fin de la ligne. Plus de variantes.',
+      'OPENING_MAP.VIEW_FULL': 'Voir Analyse Complète',
+      'OPENING_MAP.OVERVIEW': 'Aperçu',
+      'OPENING_MAP.GOOD_FOR': 'Bon Pour',
+      'OPENING_MAP.RISKS': 'Risques',
+      'OPENING_MAP.VARS': 'Vars',
+
+      'OPENING.CAT.OPEN_GAMES.NAME': 'Parties Ouvertes (1. e4 e5)',
+      'OPENING.CAT.OPEN_GAMES.DESC': 'Ouvertures classiques débutant par le pion Roi.',
+      'OPENING.CAT.SEMI_OPEN_GAMES.NAME': 'Parties Semi-Ouvertes',
+      'OPENING.CAT.SEMI_OPEN_GAMES.DESC': 'Réponses asymétriques à 1. e4.',
+      'OPENING.CAT.CLOSED_GAMES.NAME': 'Parties du Pion Dame',
+      'OPENING.CAT.CLOSED_GAMES.DESC': 'Jeux positionnels et stratégiques (1. d4).',
+      'OPENING.CAT.INDIAN_DEFENSES.NAME': 'Défenses Indiennes',
+      'OPENING.CAT.INDIAN_DEFENSES.DESC': 'Réponses hypermodernes des Noirs à 1. d4.',
+      'OPENING.CAT.FLANK_OPENINGS.NAME': 'Ouvertures de Flanc',
+      'OPENING.CAT.FLANK_OPENINGS.DESC': 'Ouvertures ne commençant pas par e4 ou d4.',
 
       'ANALYSIS.TITLE': 'Analyse',
       'ANALYSIS.DEPTH': 'Profondeur :',
@@ -556,6 +644,28 @@ export class TranslationService {
       'OPENING.DRAWS': 'Remis',
       'OPENING.BLACK_WINS': 'Schwarz gewinnt',
 
+      'OPENING_MAP.TITLE': 'Eröffnungs-Explorer',
+      'OPENING_MAP.SUBTITLE': 'Navigieren Sie durch den Baum des Schachwissens',
+      'OPENING_MAP.TOP_LEVEL': 'Oberste Ebene',
+      'OPENING_MAP.VARIATIONS': 'Varianten',
+      'OPENING_MAP.END_OF_LINE': 'Ende der Linie. Keine weiteren Varianten.',
+      'OPENING_MAP.VIEW_FULL': 'Vollständige Analyse',
+      'OPENING_MAP.OVERVIEW': 'Überblick',
+      'OPENING_MAP.GOOD_FOR': 'Gut Für',
+      'OPENING_MAP.RISKS': 'Risiken',
+      'OPENING_MAP.VARS': 'Var',
+
+      'OPENING.CAT.OPEN_GAMES.NAME': 'Offene Spiele (1. e4 e5)',
+      'OPENING.CAT.OPEN_GAMES.DESC': 'Klassische Eröffnungen mit dem Königsbauern.',
+      'OPENING.CAT.SEMI_OPEN_GAMES.NAME': 'Halb-Offene Spiele',
+      'OPENING.CAT.SEMI_OPEN_GAMES.DESC': 'Asymmetrische Antworten auf 1. e4.',
+      'OPENING.CAT.CLOSED_GAMES.NAME': 'Damenbauernspiele',
+      'OPENING.CAT.CLOSED_GAMES.DESC': 'Positionelle und strategische Spiele (1. d4).',
+      'OPENING.CAT.INDIAN_DEFENSES.NAME': 'Indische Verteidigungen',
+      'OPENING.CAT.INDIAN_DEFENSES.DESC': 'Hypermoderne Antworten von Schwarz auf 1. d4.',
+      'OPENING.CAT.FLANK_OPENINGS.NAME': 'Flankeneröffnungen',
+      'OPENING.CAT.FLANK_OPENINGS.DESC': 'Eröffnungen, die nicht mit e4 oder d4 beginnen.',
+
       'ANALYSIS.TITLE': 'Engine Analyse',
       'ANALYSIS.DEPTH': 'Tiefe:',
       'ANALYSIS.BEST_MOVE': 'Bester Zug:',
@@ -580,8 +690,8 @@ export class TranslationService {
     this.currentLang.set(lang);
   }
 
-  translate(key: string): string {
+  translate(key: string, defaultText: string = ''): string {
     const lang = this.currentLang();
-    return this.translations[lang][key] || key;
+    return this.translations[lang]?.[key] || defaultText || key;
   }
 }

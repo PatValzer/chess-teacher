@@ -1,0 +1,13 @@
+body.theme-wood {
+  --app-bg-color: #3e2723;
+  --app-background: linear-gradient(135deg, #3e2723 0%, #291b17 100%);
+  --app-text-color: #efebe9;
+  --app-border-color: #5d4037;
+
+  --dialog-bg: linear-gradient(135deg, #4e342e 0%, #3e2723 100%);
+  --dialog-border: #8d6e63;
+
+  --panel-bg: linear-gradient(135deg, #4e342e 0%, #3e2723 100%);
+  --panel-border: #8d6e63;
+  --panel-text: #efebe9;
+}

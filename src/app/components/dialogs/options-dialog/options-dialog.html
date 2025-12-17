@@ -105,7 +105,9 @@
             (click)="changeLanguage(lang.code)"
             [title]="lang.name"
           >
-            <span style="font-size: 2.5rem; line-height: 1.2">{{ lang.flag }}</span>
+            <div class="flag-container">
+              <img [src]="lang.flag" [alt]="lang.name" class="flag-icon" />
+            </div>
           </button>
           }
         </div>

@@ -45,33 +45,28 @@ export class OptionsDialog {
   appThemes = [
     { id: 'default', name: 'THEME.DEFAULT' },
     { id: 'dark', name: 'THEME.DARK' },
+    { id: 'wood', name: 'THEME.WOOD' },
     { id: 'ocean', name: 'THEME.OCEAN' },
     { id: 'forest', name: 'THEME.FOREST' },
   ];
 
-  boardThemes = [
-    { id: 'default', name: 'THEME.DEFAULT' },
-    { id: 'wood', name: 'THEME.WOOD' },
-    { id: 'marble', name: 'THEME.MARBLE' },
-    { id: 'green', name: 'THEME.GREEN' },
-    { id: 'blue', name: 'THEME.BLUE' },
-    { id: 'purple', name: 'THEME.PURPLE' },
-  ];
-
   pieceThemes = [
-    { id: 'default', name: 'Cburnett (Standard)' }, // Not translating piece names for now as they are proper names mainly
+    { id: 'default', name: 'Standard' }, // Not translating piece names for now as they are proper names mainly
     { id: 'merida', name: 'Merida' },
     { id: 'alpha', name: 'Alpha' },
-    { id: 'cheq', name: 'Cheq' },
+    { id: 'maestro', name: 'Maestro' },
     { id: 'leipzig', name: 'Leipzig' },
+    { id: 'fantasy', name: 'Fantasy' },
+    { id: 'spatial', name: 'Spatial' },
+    { id: 'celtic', name: 'Celtic' },
   ];
 
   languages: { code: Language; name: string; flag: string }[] = [
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+    { code: 'en', name: 'English', flag: 'assets/flags/us.svg' },
+    { code: 'it', name: 'Italiano', flag: 'assets/flags/it.svg' },
+    { code: 'es', name: 'Español', flag: 'assets/flags/es.svg' },
+    { code: 'fr', name: 'Français', flag: 'assets/flags/fr.svg' },
+    { code: 'de', name: 'Deutsch', flag: 'assets/flags/de.svg' },
   ];
 
   selectedBoardTheme = 'default';
@@ -114,7 +109,10 @@ export class OptionsDialog {
         this.selectedBoardTheme = 'green';
         break;
       case 'dark':
-        this.selectedBoardTheme = 'wood'; // Or custom dark theme if available
+        this.selectedBoardTheme = 'marble'; // Dark Mode now maps to Marble for better contrast
+        break;
+      case 'wood':
+        this.selectedBoardTheme = 'wood';
         break;
       default:
         this.selectedBoardTheme = 'default';
@@ -151,8 +149,11 @@ export class OptionsDialog {
       default: 'cburnett',
       merida: 'merida',
       alpha: 'alpha',
-      cheq: 'cheq',
+      maestro: 'maestro',
       leipzig: 'leipzig',
+      fantasy: 'fantasy',
+      spatial: 'spatial',
+      celtic: 'celtic',
     };
     const theme = themeMap[themeId] || 'cburnett';
     return `https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/${theme}/wN.svg`;

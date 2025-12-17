@@ -17,6 +17,7 @@ export interface OpeningDetail {
 }
 
 export interface OpeningCategory {
+  id: string; // Added ID for translation keys
   name: string;
   description: string;
   openings: OpeningDetail[];
@@ -31,6 +32,7 @@ export class OpeningDataService {
   getOpenings(): OpeningCategory[] {
     return [
       {
+        id: 'open-games',
         name: 'Open Games (1. e4 e5)',
         description: "Classic chess openings starting with the King's Pawn.",
         openings: [
@@ -136,6 +138,7 @@ export class OpeningDataService {
         ],
       },
       {
+        id: 'semi-open-games',
         name: 'Semi-Open Games',
         description: 'Asymmetric responses to 1. e4.',
         openings: [
@@ -247,6 +250,7 @@ export class OpeningDataService {
         ],
       },
       {
+        id: 'closed-games',
         name: "Queen's Pawn Games",
         description: 'Positional and strategic games (1. d4).',
         openings: [
@@ -300,6 +304,7 @@ export class OpeningDataService {
         ],
       },
       {
+        id: 'indian-defenses',
         name: 'Indian Defenses',
         description: "Black's hypermodern responses to 1. d4.",
         openings: [
@@ -344,6 +349,7 @@ export class OpeningDataService {
         ],
       },
       {
+        id: 'flank-openings',
         name: 'Flank Openings',
         description: 'Openings not starting with e4 or d4.',
         openings: [
